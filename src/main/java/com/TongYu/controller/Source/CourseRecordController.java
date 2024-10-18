@@ -20,8 +20,6 @@ public class CourseRecordController {
 
     @Resource
     public CourseRecordService courseRecordService;
-    @Resource
-    public StudentService studentService;
 
 
     @GetMapping("/listInfo")
@@ -30,15 +28,15 @@ public class CourseRecordController {
         courseRequest.setStartIndex((courseRequest.getStartIndex() - 1) * courseRequest.getPageSize());
         Page<CourseRecord> page = new Page<>(courseRequest.getStartIndex(), courseRequest.getPageSize());
         QueryWrapper<CourseRecord> queryWrapper = new QueryWrapper<>();
-        if (courseRequest.getState() != null) {
+        if (!courseRequest.getState().isEmpty()) {
             queryWrapper.eq("state", courseRequest.getState());
         }
         //根据角色判断查询条件-教练
         if (courseRequest.getRole() == 2) {
             queryWrapper.eq("trainer_id", courseRequest.getTrainerId());
         }
-        Page<CourseRecord> pages = courseRecordService.page(page, queryWrapper);
-        return pages;
+        courseRecordService.list(queryWrapper);
+        return courseRecordService.page(page, queryWrapper);
     }
 
     @GetMapping("/info")

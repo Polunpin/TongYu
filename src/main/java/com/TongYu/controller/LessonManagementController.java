@@ -124,7 +124,7 @@ public class LessonManagementController {
             CourseResponse courseResponse = new CourseResponse();
             copyProperties(courseRecord, courseResponse);
             // 计算时间差
-            long timeDifference = courseRecord.getStartTime().getTime() - courseRecord.getEndTime().getTime();
+            long timeDifference = courseRecord.getEndTime().getTime() - courseRecord.getStartTime().getTime();
             long diffInHours = timeDifference / (60 * 60 * 1000);
 
             if (courseRecord.getTrainerId() != null) {
@@ -132,7 +132,7 @@ public class LessonManagementController {
                 Long lessonPrice = diffInHours * trainer.getTrainerPrice();
                 courseResponse.setTrainerName(trainer.getTrainerName());
                 //开始结束时间的 时间差*教练课时费用
-                courseResponse.setPendingAmount(lessonPrice +"元"+"/"+diffInHours+"小时");
+                courseResponse.setPendingAmount(lessonPrice + "元" + "/" + diffInHours + "小时");
             }
             courseResponses.add(courseResponse);
         }

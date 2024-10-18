@@ -24,3 +24,8 @@ wx:
   #企业微信
   corpId: wwcb10560218a47a01
   corpSecret: 7pceCMURfdDHC0iXvKY9JIE-GRSVzvd-25pjxIqom9g
+
+logging:
+  level:
+    mybatis: DEBUG
+    com.baomidou.mybatisplus: DEBUG

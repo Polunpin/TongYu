@@ -39,7 +39,7 @@ public class Trainer implements Serializable {
     /**
      * 性别
      */
-    private Integer gender;
+    private String gender;
 
     /**
      * 课时费用
@@ -74,7 +74,7 @@ public class Trainer implements Serializable {
     /**
      * 在职状态
      */
-    private Integer trainerStatus;
+    private String trainerStatus;
 
     /**
      * 创建时间
