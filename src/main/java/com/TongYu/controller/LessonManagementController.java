@@ -15,20 +15,12 @@ import com.TongYu.service.TrainerService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.swing.text.DateFormatter;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.TimeZone;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
