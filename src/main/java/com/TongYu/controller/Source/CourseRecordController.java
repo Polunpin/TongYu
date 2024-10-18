@@ -25,16 +25,20 @@ public class CourseRecordController {
 
 
     @GetMapping("/listInfo")
-    public ApiResponse listInfo(@RequestBody CourseRequest courseRequest) {
+    public Page<CourseRecord> listInfo(@RequestBody CourseRequest courseRequest) {
         //分页
         courseRequest.setStartIndex((courseRequest.getStartIndex() - 1) * courseRequest.getPageSize());
         Page<CourseRecord> page = new Page<>(courseRequest.getStartIndex(), courseRequest.getPageSize());
-        //查询条件
         QueryWrapper<CourseRecord> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("state", courseRequest.getState());
-        queryWrapper.eq("trainer_id", courseRequest.getTrainerId());
+        if (courseRequest.getState() != null) {
+            queryWrapper.eq("state", courseRequest.getState());
+        }
+        //根据角色判断查询条件-教练
+        if (courseRequest.getRole() == 2) {
+            queryWrapper.eq("trainer_id", courseRequest.getTrainerId());
+        }
         Page<CourseRecord> pages = courseRecordService.page(page, queryWrapper);
-        return ApiResponse.ok(pages);
+        return pages;
     }
 
     @GetMapping("/info")

@@ -13,6 +13,7 @@ import com.TongYu.service.LessonManagementService;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.TrainerService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.TimeZone;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -118,50 +120,31 @@ public class LessonManagementController {
         return ApiResponse.ok(courseRecords);
     }
 
-    /**
-     * 待分派
-     *
-     * @return ApiResponse
-     */
-    @PostMapping("/waitDistribution")
-    public ApiResponse waitDistribution(@RequestBody CourseRequest courseRequest) {
-        courseRequest.setState("待分派");
-        return ApiResponse.ok(courseRecordController.listInfo(courseRequest));
-    }
 
     /**
-     * 待上课
-     *
-     * @return ApiResponse
+     * 课单列表
      */
-    @PostMapping("/waitClass")
-    public ApiResponse waitClass(@RequestBody CourseRequest courseRequest) {
-        courseRequest.setState("待上课");
-        courseRequest.setTrainerId(courseRequest.getTrainerId());
-        return ApiResponse.ok(courseRecordController.listInfo(courseRequest));
-    }
+    @PostMapping("/courseRecordList")
+    public ApiResponse courseRecordList(@RequestBody CourseRequest courseRequest) {
+        List<CourseResponse> courseResponses = new ArrayList<>();
+        Page<CourseRecord> courseRecordPage = courseRecordController.listInfo(courseRequest);
+        for (CourseRecord courseRecord : courseRecordPage.getRecords()) {
+            CourseResponse courseResponse = new CourseResponse();
+            copyProperties(courseRecord, courseResponse);
+            // 计算时间差
+            long timeDifference = courseRecord.getStartTime().getTime() - courseRecord.getEndTime().getTime();
+            long diffInHours = timeDifference / (60 * 60 * 1000);
 
-    /**
-     * 待反馈
-     *
-     * @return ApiResponse
-     */
-    @PostMapping("/waitFeedback")
-    public ApiResponse waitFeedback(@RequestBody CourseRequest courseRequest) {
-        courseRequest.setState("待反馈");
-        courseRequest.setTrainerId(courseRequest.getTrainerId());
-        return ApiResponse.ok(courseRecordController.listInfo(courseRequest));
-    }
-
-    /**
-     * 待结算
-     *
-     * @return ApiResponse
-     */
-    @PostMapping("/waitSettlement")
-    public ApiResponse waitSettlement(@RequestBody CourseRequest courseRequest) {
-        courseRequest.setState("待结算");
-        courseRequest.setTrainerId(courseRequest.getTrainerId());
-        return ApiResponse.ok(courseRecordController.listInfo(courseRequest));
+            if (courseRecord.getTrainerId() != null) {
+                Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
+                Long lessonPrice = diffInHours * trainer.getTrainerPrice();
+                courseResponse.setTrainerName(trainer.getTrainerName());
+                //开始结束时间的 时间差*教练课时费用
+                courseResponse.setPendingAmount(lessonPrice +"元"+"/"+diffInHours+"小时");
+            }
+            courseResponses.add(courseResponse);
+        }
+        return ApiResponse.ok(courseResponses);
     }
 }
+

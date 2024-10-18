@@ -44,7 +44,7 @@ public class Trainer implements Serializable {
     /**
      * 课时费用
      */
-    private String trainerPrice;
+    private int trainerPrice;
 
     /**
      * 车牌
