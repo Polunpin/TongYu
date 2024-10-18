@@ -27,10 +27,6 @@ import javax.annotation.Resource;
 @RequestMapping("/courseRecord")
 public class WeComController {
 
-    @Value("${wx.corpId}")
-    private String corpId;
-    @Value("${wx.corpSecret}")
-    private String corpSecret;
     @Resource
     public WeComService weComService;
 
