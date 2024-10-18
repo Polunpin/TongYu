@@ -18,5 +18,9 @@ spring:
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
 wx:
+  #企业微信-空间ID
   space-id: s.wwcb10560218a47a01.728824185aRo
   father-id: s.wwcb10560218a47a01.728824185aRo
+  #企业微信
+  corpId: wwcb10560218a47a01
+  corpSecret: 7pceCMURfdDHC0iXvKY9JIE-GRSVzvd-25pjxIqom9g
