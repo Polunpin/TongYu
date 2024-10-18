@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.TongYu.mapper.CourseRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.TongYu.model.CourseRecord">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
+            <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+            <result property="longitude" column="longitude" jdbcType="VARCHAR"/>
+            <result property="latitude" column="latitude" jdbcType="VARCHAR"/>
+            <result property="nature" column="nature" jdbcType="OTHER"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="performance" column="performance" jdbcType="OTHER"/>
+            <result property="proposal" column="proposal" jdbcType="VARCHAR"/>
+            <result property="state" column="state" jdbcType="OTHER"/>
+            <result property="studentId" column="student_id" jdbcType="BIGINT"/>
+            <result property="trainerId" column="trainer_id" jdbcType="BIGINT"/>
+            <result property="creatTime" column="creat_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,start_time,end_time,
+        longitude,latitude,nature,
+        content,performance,proposal,
+        state,student_id,trainer_id,
+        creat_time
+    </sql>
+</mapper>
