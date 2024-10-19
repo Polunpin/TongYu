@@ -30,9 +30,9 @@ public class WeComController {
     public WeComService weComService;
 
     @PostMapping("/uploadFile")
-    public String uploadFile(@RequestPart("file") MultipartFile file, @RequestPart("stuId") String stuId) {
+    public ApiResponse uploadFile(@RequestPart("file") MultipartFile file, @RequestPart("stuId") String stuId) {
         // 驾驶证图片保存至企业微信微盘
-        return weComService.uploadFileToWeCom(file, stuId);
+        return ApiResponse.ok(weComService.uploadFileToWeCom(file, stuId));
     }
 
     /**
