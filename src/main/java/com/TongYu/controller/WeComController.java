@@ -3,9 +3,9 @@ package com.TongYu.controller;
 import com.TongYu.config.ApiResponse;
 import com.TongYu.config.GlobalCache;
 import com.TongYu.service.WeComService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,24 +41,26 @@ public class WeComController {
      * 每两个小时执行一次
      */
     @Scheduled(cron = "0 0 */2 * * ?")
-    public void getCorpAccessToken() throws JSONException {
+    public void getCorpAccessToken() {
         GlobalCache.remove("access_token");
         //上传文件到企业微信
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=wwcb10560218a47a01&corpsecret=7pceCMURfdDHC0iXvKY9JIE-GRSVzvd-25pjxIqom9g";
         //获取access_token,get请求
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        JSONObject object = new JSONObject(response.getBody());
+        // 将响应体转换为 JSONObject
+        JSONObject object = JSONObject.parseObject(response.getBody());
         GlobalCache.put("access_token", object.get("access_token"));
         log.info("更新AccessToken成功，有效期{}秒；access_token：{}", object.get("expires_in"), object.get("access_token"));
     }
+
 
     /**
      * jsCode2session|获取 session_key
      * @param js_code 前端获取的 code
      */
     @PostMapping("/jsCode2session")
-    public ApiResponse jsCode2session(String js_code) throws JSONException {
+    public ApiResponse jsCode2session(String js_code) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("appid", "wx3e5902a3e5f51155");
         jsonObject.put("secret", "f2c766e689b40d297115cdf7a246e8f7");
