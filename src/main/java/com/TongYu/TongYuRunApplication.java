@@ -14,6 +14,6 @@ public class TongYuRunApplication {
 
   public static void main(String[] args) throws JSONException {
     SpringApplication.run(TongYuRunApplication.class, args);
-    new WeComController().getCorpAccessToken();
+//    new WeComController().getCorpAccessToken();
   }
 }
