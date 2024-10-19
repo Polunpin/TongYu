@@ -57,7 +57,7 @@ public class WeComServiceImpl implements WeComService {
         jsonObject.put("spaceid", spaceId);
         jsonObject.put("fatherid", fatherId);
         //POST请求
-        ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject.toString(), String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject, String.class);
         JSONObject object = JSONObject.parseObject(response.getBody());
         if (object.getIntValue("errcode") == 0) {
             return object.getString("fileid");

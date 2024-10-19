@@ -64,10 +64,12 @@ public class WeComController {
         jsonObject.put("appid", "wx5745b3f0a911e8d8");
         jsonObject.put("secret", "9a4e5d01d729f1b9951b7d37a3375da0");
         jsonObject.put("js_code", js_code);
-        jsonObject.put("grant_type", "'authorization_code'");
+        jsonObject.put("grant_type", "authorization_code");
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.weixin.qq.com/sns/jscode2session";
-        ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject.toString(), String.class);
+        log.info("jsCode2session接口请求路径：{}", url);
+        log.info("jsCode2session接口请求参数：{}", jsonObject);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject, String.class);
         log.info("jsCode2session接口返回结果：{}", response.getBody());
         return ApiResponse.ok(response.getBody());
     }
