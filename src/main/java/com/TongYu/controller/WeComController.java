@@ -1,6 +1,5 @@
 package com.TongYu.controller;
 
-import com.TongYu.config.ApiResponse;
 import com.TongYu.config.GlobalCache;
 import com.TongYu.service.WeComService;
 import lombok.extern.slf4j.Slf4j;
