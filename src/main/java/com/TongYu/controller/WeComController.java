@@ -24,7 +24,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @RestController()
-@RequestMapping("/courseRecord")
+@RequestMapping("/weCom")
 public class WeComController {
 
     @Resource
