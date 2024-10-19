@@ -56,7 +56,6 @@ public class WeComController {
 
     /**
      * jsCode2session|获取 session_key
-     *
      * @param js_code 前端获取的 code
      */
     @PostMapping("/jsCode2session")
