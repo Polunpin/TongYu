@@ -4,10 +4,10 @@ import com.TongYu.config.GlobalCache;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
+import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -58,8 +58,8 @@ public class WeComServiceImpl implements WeComService {
         jsonObject.put("fatherid", fatherId);
         //POST请求
         ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject.toString(), String.class);
-        JSONObject object = new JSONObject(response.getBody());
-        if (object.getInt("errcode") == 0) {
+        JSONObject object = JSONObject.parseObject(response.getBody());
+        if (object.getIntValue("errcode") == 0) {
             return object.getString("fileid");
         } else {
             log.info("上传文件到企业微信失败！返回结果：{}", response.getBody());
