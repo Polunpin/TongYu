@@ -61,8 +61,8 @@ public class WeComController {
     @PostMapping("/jsCode2session")
     public ApiResponse jsCode2session(String js_code) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("appid", "wx3e5902a3e5f51155");
-        jsonObject.put("secret", "f2c766e689b40d297115cdf7a246e8f7");
+        jsonObject.put("appid", "wx5745b3f0a911e8d8");
+        jsonObject.put("secret", "9a4e5d01d729f1b9951b7d37a3375da0");
         jsonObject.put("js_code", js_code);
         jsonObject.put("grant_type", "'authorization_code'");
         RestTemplate restTemplate = new RestTemplate();
