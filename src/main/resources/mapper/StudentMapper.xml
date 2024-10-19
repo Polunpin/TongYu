@@ -11,16 +11,17 @@
             <result property="stuName" column="stu_name" jdbcType="VARCHAR"/>
             <result property="gender" column="gender" jdbcType="OTHER"/>
             <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+            <result property="image" column="image" jdbcType="VARCHAR"/>
             <result property="channel" column="channel" jdbcType="OTHER"/>
             <result property="total" column="total" jdbcType="TINYINT"/>
             <result property="give" column="give" jdbcType="TINYINT"/>
             <result property="lave" column="lave" jdbcType="TINYINT"/>
             <result property="used" column="used" jdbcType="TINYINT"/>
-            <result property="consultDate" column="consult_date" jdbcType="TIMESTAMP"/>
+            <result property="consultDate" column="consult_date" jdbcType="DATE"/>
             <result property="intention" column="intention" jdbcType="TINYINT"/>
             <result property="analysis" column="analysis" jdbcType="VARCHAR"/>
             <result property="stage" column="stage" jdbcType="OTHER"/>
-            <result property="creatTime" column="creat_time" jdbcType="TIMESTAMP"/>
+            <result property="creatTime" column="creat_time" jdbcType="DATE"/>
     </resultMap>
 
     <sql id="Base_Column_List">

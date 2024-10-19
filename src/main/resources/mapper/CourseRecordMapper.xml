@@ -6,8 +6,8 @@
 
     <resultMap id="BaseResultMap" type="com.TongYu.model.CourseRecord">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
-            <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+            <result property="startTime" column="start_time" jdbcType="DATE"/>
+            <result property="endTime" column="end_time" jdbcType="DATE"/>
             <result property="longitude" column="longitude" jdbcType="VARCHAR"/>
             <result property="latitude" column="latitude" jdbcType="VARCHAR"/>
             <result property="notes" column="notes" jdbcType="VARCHAR"/>
@@ -18,7 +18,7 @@
             <result property="state" column="state" jdbcType="OTHER"/>
             <result property="studentId" column="student_id" jdbcType="BIGINT"/>
             <result property="trainerId" column="trainer_id" jdbcType="BIGINT"/>
-            <result property="creatTime" column="creat_time" jdbcType="TIMESTAMP"/>
+            <result property="creatTime" column="creat_time" jdbcType="DATE"/>
     </resultMap>
 
     <sql id="Base_Column_List">
