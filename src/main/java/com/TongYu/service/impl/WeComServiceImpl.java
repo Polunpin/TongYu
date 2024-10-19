@@ -78,12 +78,12 @@ public class WeComServiceImpl implements WeComService {
     }
 
     @Override
-    public String jsCode2session(String js_code) {
+    public String jsCode2session(String jsCode) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(4);
         //定义query参数
         params.add("appid", "wx3e5902a3e5f51155");
         params.add("secret", "f2c766e689b40d297115cdf7a246e8f7");
-        params.add("js_code", js_code);
+        params.add("js_code", jsCode);
         params.add("grant_type", "authorization_code");
         //定义url参数
         String url = UriComponentsBuilder.fromUriString("https://api.weixin.qq.com/sns/jscode2session")
