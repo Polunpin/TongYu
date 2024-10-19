@@ -3,7 +3,6 @@ package com.TongYu;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
@@ -11,8 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan(basePackages = {"com.TongYu.mapper"})
 public class TongYuRunApplication {
 
-  public static void main(String[] args) throws JSONException {
+  public static void main(String[] args) {
     SpringApplication.run(TongYuRunApplication.class, args);
-//    new WeComController().getCorpAccessToken();
   }
 }

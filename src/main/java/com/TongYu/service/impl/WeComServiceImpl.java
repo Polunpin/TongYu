@@ -1,6 +1,5 @@
 package com.TongYu.service.impl;
 
-import com.TongYu.config.GlobalCache;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
@@ -14,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.websocket.server.PathParam;
 import java.util.Base64;
 
 /**
@@ -25,6 +25,7 @@ import java.util.Base64;
 @Service
 public class WeComServiceImpl implements WeComService {
 
+    private static final String ACCESS_TOKEN = "4nk8KdbbQLimQHan1sSrfMYH24f_jzloOO7mKPcUmLUMrvDBmPNHFbVWhvTvY_FSMqopSglZ6LHVv4T8OZj1sUZHfCuQApb7_92gMVLiDQKX_DXGhl9IRU-FKpG9pbRsdzp3p1QhCk2vbvv5ZAxxqppr4QhSosMypUMmdhn_tONM1LFI7Fv970SX_Dbvr2aVtA-k73iUiLHVpuHdvkVXjw";
 
     @Value("${wx.space-id}")
     private String spaceId;
@@ -47,7 +48,7 @@ public class WeComServiceImpl implements WeComService {
         Student student = studentService.getById(stuId);
         //上传文件到企业微信
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/wedrive/file_upload?access_token="+ GlobalCache.get("access_token");
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/wedrive/file_upload?access_token="+ACCESS_TOKEN;
         JSONObject jsonObject = new JSONObject();
         //文件内容
         jsonObject.put("file_base64_content", Base64.getEncoder().encodeToString(file.getBytes()));

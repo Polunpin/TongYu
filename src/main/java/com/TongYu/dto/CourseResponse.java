@@ -12,11 +12,6 @@ import lombok.EqualsAndHashCode;
 public class CourseResponse extends CourseRecord {
 
     /**
-     * 学员姓名
-     */
-    private String studentName;
-
-    /**
      * 教练姓名
      */
     private String trainerName;
@@ -30,11 +25,5 @@ public class CourseResponse extends CourseRecord {
      * 预约时间
      */
     private String appointmentTime;
-
-
-    /**
-     * 待结算金额
-     */
-    private String pendingAmount;
 
 }

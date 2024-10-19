@@ -32,10 +32,4 @@ public class CourseRequest {
      * 页面数量
      */
     private int pageSize;
-
-    /**
-     * 角色标识 1-学员 2-教练 3-管理员
-     */
-    private int role;
-
 }
