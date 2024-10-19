@@ -68,6 +68,7 @@ public class WeComController {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.weixin.qq.com/sns/jscode2session";
         ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject.toString(), String.class);
+        log.info("jsCode2session接口返回结果：{}", response.getBody());
         return ApiResponse.ok(response.getBody());
     }
 
