@@ -21,7 +21,6 @@ import javax.annotation.Resource;
  * 企微相关接口
  *
  * @author TongYu
- * @date 2024/10/14 01:46
  */
 @Slf4j
 @RestController()
