@@ -48,4 +48,9 @@ public class PersonalInfoResponse {
      */
     private Integer levelNumber;
 
+    /**
+     * 约课 true-已约   false-未约
+     */
+    private Boolean isAppointment;
+
 }

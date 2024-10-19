@@ -46,6 +46,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
             // 学生id
             courseRecordQw.eq("student_id", student.getId());
+            long isAppointment = courseRecordService.count(courseRecordQw);
+            personalInfoResponse.setIsAppointment(isAppointment != 0);
             // 已完成的课时
             courseRecordQw.eq("state", "4");
             long count = courseRecordService.count(courseRecordQw);
@@ -64,6 +66,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             personalInfoResponse.setLave(0);
             personalInfoResponse.setUsed(0);
             personalInfoResponse.setLevelNumber(0);
+            personalInfoResponse.setIsAppointment(Boolean.FALSE);
         }
         return personalInfoResponse;
     }
