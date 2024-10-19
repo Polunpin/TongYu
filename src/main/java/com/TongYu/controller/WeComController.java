@@ -46,7 +46,23 @@ public class WeComController {
      */
     @Scheduled(cron = "0 0 */2 * * ?")
     public void getCorpAccessToken() {
-        weComService.getCorpAccessToken();
+        GlobalCache.remove("access_token");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(2);
+        //定义query参数
+        params.add("corpid", "wwcb10560218a47a01");
+        params.add("corpsecret", "7pceCMURfdDHC0iXvKY9JIE-GRSVzvd-25pjxIqom9g");
+        //定义url参数
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken")
+                .queryParams(params).toUriString();
+        RestTemplate restTemplate = new RestTemplate();
+        //获取access_token,get请求
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        // 将响应体转换为 JSONObject
+        JSONObject object = JSONObject.parseObject(response.getBody());
+        // 缓存access_token
+        GlobalCache.put("access_token", object.get("access_token"));
+        log.info("更新AccessToken成功，有效期{}秒；access_token：{}", object.get("expires_in"), object.get("access_token"));
     }
 
     /**
