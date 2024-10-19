@@ -22,9 +22,19 @@ public class CourseResponse extends CourseRecord {
     private String trainerName;
 
     /**
-     * 预约日期
+     * 教练头像
      */
-    private String appointmentDate;
+    private String trainerAvatar;
+
+    /**
+     * 预约日期-月份
+     */
+    private int appointmentDateByMonth;
+
+    /**
+     * 预约日期-日期
+     */
+    private int appointmentDateByDay;
 
     /**
      * 预约时间

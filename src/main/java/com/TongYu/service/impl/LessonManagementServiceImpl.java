@@ -1,18 +1,30 @@
 package com.TongYu.service.impl;
 
 import com.TongYu.config.ApiResponse;
+import com.TongYu.controller.Source.CourseRecordController;
+import com.TongYu.dto.CourseAddRequest;
+import com.TongYu.dto.CourseRequest;
+import com.TongYu.dto.CourseResponse;
 import com.TongYu.dto.PersonalInfoResponse;
-import com.TongYu.mapper.StudentMapper;
 import com.TongYu.model.CourseRecord;
 import com.TongYu.model.Student;
+import com.TongYu.model.Trainer;
 import com.TongYu.service.CourseRecordService;
 import com.TongYu.service.LessonManagementService;
 import com.TongYu.service.StudentService;
+import com.TongYu.service.TrainerService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 /**
  * @author lanyiping
@@ -26,6 +38,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     public StudentService studentService;
     @Resource
     public CourseRecordService courseRecordService;
+    @Resource
+    public TrainerService trainerService;
 
     @Override
     public PersonalInfoResponse personalInfo(String unionId) {
@@ -69,6 +83,71 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             personalInfoResponse.setIsAppointment(Boolean.FALSE);
         }
         return personalInfoResponse;
+    }
+
+    @Override
+    public Boolean classReservation(CourseAddRequest courseAddRequest) {
+        Student student = new Student();
+        student.setId(courseAddRequest.getStudentId());
+        student.setStuName(courseAddRequest.getStuName());
+        student.setTelephone(courseAddRequest.getTelephone());
+        student.setImage(courseAddRequest.getImageId());
+        studentService.updateById(student);
+
+        // TODO 发送服务通知：预约成功通知
+        return courseRecordService.save(courseAddRequest);
+    }
+
+    @Override
+    public Object feedback(String studentId) {
+        List<CourseResponse> courseRecords = new ArrayList<>();
+        List<CourseRecord> courseRecordList =
+                courseRecordService.list(new QueryWrapper<CourseRecord>().eq("student_id", studentId));
+        for (CourseRecord courseRecord : courseRecordList) {
+            CourseResponse courseResponse = new CourseResponse();
+            copyProperties(courseRecord, courseResponse);
+            if (courseRecord.getTrainerId() != null) {
+                Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
+                courseResponse.setTrainerName(trainer.getTrainerName());
+            }
+            //预约日期
+            LocalDateTime startDateTime = courseRecord.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            courseResponse.setAppointmentDateByMonth(startDateTime.getMonthValue());
+            courseResponse.setAppointmentDateByDay(startDateTime.getDayOfMonth());
+            //预约时间
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            // 格式化开始时间和结束时间-预约时间
+            String formattedStartTime = outputFormat.format(courseRecord.getStartTime());
+            String formattedEndTime = outputFormat.format(courseRecord.getEndTime());
+            // 拼接最终的格式-预约时间
+            String appointmentTime = formattedStartTime + "-" + formattedEndTime.split(" ")[1];
+            courseResponse.setAppointmentTime(appointmentTime);
+            courseRecords.add(courseResponse);
+        }
+        return ApiResponse.ok(courseRecords);
+    }
+
+    @Override
+    public Object courseRecordList(CourseRequest courseRequest) {
+        List<CourseResponse> courseResponses = new ArrayList<>();
+        Page<CourseRecord> courseRecordPage = courseRecordService.listInfo(courseRequest);
+        for (CourseRecord courseRecord : courseRecordPage.getRecords()) {
+            CourseResponse courseResponse = new CourseResponse();
+            copyProperties(courseRecord, courseResponse);
+            // 计算时间差
+            long timeDifference = courseRecord.getEndTime().getTime() - courseRecord.getStartTime().getTime();
+            long diffInHours = timeDifference / (60 * 60 * 1000);
+
+            if (courseRecord.getTrainerId() != null) {
+                Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
+                Long lessonPrice = diffInHours * trainer.getTrainerPrice();
+                courseResponse.setTrainerName(trainer.getTrainerName());
+                //开始结束时间的 时间差*教练课时费用
+                courseResponse.setPendingAmount(lessonPrice + "元" + "/" + diffInHours + "小时");
+            }
+            courseResponses.add(courseResponse);
+        }
+        return ApiResponse.ok(courseResponses);
     }
 }
 

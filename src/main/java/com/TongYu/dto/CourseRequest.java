@@ -16,7 +16,7 @@ public class CourseRequest {
     /**
      * 教练ID
      */
-    private Long trainerId;
+    private String trainerId;
 
     /**
      * 课单状态
@@ -32,10 +32,5 @@ public class CourseRequest {
      * 页面数量
      */
     private int pageSize;
-
-    /**
-     * 角色标识 1-学员 2-教练 3-管理员
-     */
-    private int role;
 
 }

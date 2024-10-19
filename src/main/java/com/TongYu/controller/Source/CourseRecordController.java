@@ -24,19 +24,7 @@ public class CourseRecordController {
 
     @GetMapping("/listInfo")
     public Page<CourseRecord> listInfo(@RequestBody CourseRequest courseRequest) {
-        //分页
-        courseRequest.setStartIndex((courseRequest.getStartIndex() - 1) * courseRequest.getPageSize());
-        Page<CourseRecord> page = new Page<>(courseRequest.getStartIndex(), courseRequest.getPageSize());
-        QueryWrapper<CourseRecord> queryWrapper = new QueryWrapper<>();
-        if (!courseRequest.getState().isEmpty()) {
-            queryWrapper.eq("state", courseRequest.getState());
-        }
-        //根据角色判断查询条件-教练
-        if (courseRequest.getRole() == 2) {
-            queryWrapper.eq("trainer_id", courseRequest.getTrainerId());
-        }
-        courseRecordService.list(queryWrapper);
-        return courseRecordService.page(page, queryWrapper);
+        return courseRecordService.listInfo(courseRequest);
     }
 
     @GetMapping("/info")

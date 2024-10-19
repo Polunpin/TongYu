@@ -1,17 +1,22 @@
 package com.TongYu.service.impl;
 
+import com.TongYu.config.ApiResponse;
 import com.TongYu.config.GlobalCache;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import java.util.Base64;
@@ -67,6 +72,58 @@ public class WeComServiceImpl implements WeComService {
         return response.getBody();
     }
 
+    @Override
+    public void getCorpAccessToken() {
+        GlobalCache.remove("access_token");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(2);
+        //定义query参数
+        params.add("corpid", "wwcb10560218a47a01");
+        params.add("corpsecret", "7pceCMURfdDHC0iXvKY9JIE-GRSVzvd-25pjxIqom9g");
+        //定义url参数
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken")
+                .queryParams(params).toUriString();
+        RestTemplate restTemplate = new RestTemplate();
+        //获取access_token,get请求
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        // 将响应体转换为 JSONObject
+        JSONObject object = JSONObject.parseObject(response.getBody());
+        // 缓存access_token
+        GlobalCache.put("access_token", object.get("access_token"));
+        log.info("更新AccessToken成功，有效期{}秒；access_token：{}", object.get("expires_in"), object.get("access_token"));
+    }
+
+    @Override
+    public String jsCode2session(String js_code) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(4);
+        //定义query参数
+        params.add("appid", "wx3e5902a3e5f51155");
+        params.add("secret", "f2c766e689b40d297115cdf7a246e8f7");
+        params.add("js_code", js_code);
+        params.add("grant_type", "authorization_code");
+        //定义url参数
+        String url = UriComponentsBuilder.fromUriString("https://api.weixin.qq.com/sns/jscode2session")
+                .queryParams(params).toUriString();
+        //请求小程序API
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        return response.getBody();
+    }
+
+    @Override
+    public JSONObject getWxCustomerDetails(String unionId) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(2);
+        //定义query参数
+        params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
+        params.add("external_userid", unionId);
+        //定义url参数
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get")
+                .queryParams(params).toUriString();
+        //请求企业微信API
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        return JSON.parseObject(response.getBody());
+    }
 }
 
 
