@@ -1,7 +1,6 @@
 package com.TongYu.service.impl;
 
 import com.TongYu.config.ApiResponse;
-import com.TongYu.controller.Source.CourseRecordController;
 import com.TongYu.dto.CourseAddRequest;
 import com.TongYu.dto.CourseRequest;
 import com.TongYu.dto.CourseResponse;
@@ -9,10 +8,8 @@ import com.TongYu.dto.PersonalInfoResponse;
 import com.TongYu.model.CourseRecord;
 import com.TongYu.model.Student;
 import com.TongYu.model.Trainer;
-import com.TongYu.service.CourseRecordService;
-import com.TongYu.service.LessonManagementService;
-import com.TongYu.service.StudentService;
-import com.TongYu.service.TrainerService;
+import com.TongYu.service.*;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -40,28 +37,39 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     public CourseRecordService courseRecordService;
     @Resource
     public TrainerService trainerService;
+    @Resource
+    public WeComService weComService;
 
     @Override
     public PersonalInfoResponse personalInfo(String unionId) {
         QueryWrapper<Student> studentQw = new QueryWrapper<>();
         studentQw.eq("union_id", unionId);
         Student student = studentService.getOne(studentQw);
+        JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(unionId);
+        String name = "";
+        String avatar = "";
+        if (wxCustomerDetails != null) {
+            //昵称
+            name = wxCustomerDetails.getJSONObject("external_contact").getString("name");
+            //头像
+            avatar = wxCustomerDetails.getJSONObject("external_contact").getString("avatar");
+        }
         // 学员的课时信息
-        PersonalInfoResponse personalInfoResponse = new PersonalInfoResponse();
+        PersonalInfoResponse personalInfo = new PersonalInfoResponse();
         if (student != null) {
-            personalInfoResponse.setId(student.getId());
-            personalInfoResponse.setStuName(student.getStuName());
-            personalInfoResponse.setTotal(student.getTotal());
-            personalInfoResponse.setGive(student.getGive());
-            personalInfoResponse.setLave(student.getLave());
-            personalInfoResponse.setUsed(student.getUsed());
-
+            personalInfo.setId(student.getId());
+            personalInfo.setStuName(student.getStuName());
+            personalInfo.setTotal(student.getTotal());
+            personalInfo.setGive(student.getGive());
+            personalInfo.setLave(student.getLave());
+            personalInfo.setUsed(student.getUsed());
+            personalInfo.setHeadImgUrl(avatar);
             //根据学生id查询课程记录-已上课时
             QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
             // 学生id
             courseRecordQw.eq("student_id", student.getId());
             long isAppointment = courseRecordService.count(courseRecordQw);
-            personalInfoResponse.setIsAppointment(isAppointment != 0);
+            personalInfo.setIsAppointment(isAppointment != 0);
             // 已完成的课时
             courseRecordQw.eq("state", "4");
             long count = courseRecordService.count(courseRecordQw);
@@ -69,20 +77,20 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             if (count > 0) {
                 levelNumber = (int) Math.floorDiv(count, student.getTotal());
             }
-            personalInfoResponse.setLevelNumber(levelNumber);
-
+            personalInfo.setLevelNumber(levelNumber);
         } else {
             // 学员不存在时返回默认值
-            personalInfoResponse.setId(0L);
-            personalInfoResponse.setStuName("请先联系客服");
-            personalInfoResponse.setTotal(0);
-            personalInfoResponse.setGive(0);
-            personalInfoResponse.setLave(0);
-            personalInfoResponse.setUsed(0);
-            personalInfoResponse.setLevelNumber(0);
-            personalInfoResponse.setIsAppointment(Boolean.FALSE);
+            personalInfo.setId(0L);
+            personalInfo.setStuName(name);
+            personalInfo.setHeadImgUrl("");
+            personalInfo.setTotal(0);
+            personalInfo.setGive(0);
+            personalInfo.setLave(0);
+            personalInfo.setUsed(0);
+            personalInfo.setLevelNumber(0);
+            personalInfo.setIsAppointment(Boolean.FALSE);
         }
-        return personalInfoResponse;
+        return personalInfo;
     }
 
     @Override

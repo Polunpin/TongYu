@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * 首页-个人信息返回对象
  */
@@ -22,6 +20,11 @@ public class PersonalInfoResponse {
      * 学员姓名
      */
     private String stuName;
+
+    /**
+     * 学员头像 URL 地址
+     */
+    private String headImgUrl;
 
     /**
      * 总课时

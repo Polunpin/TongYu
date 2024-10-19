@@ -1,6 +1,6 @@
 package com.TongYu.service;
 
-import com.TongYu.config.ApiResponse;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -37,6 +37,6 @@ public interface WeComService {
      * 获取微信客户详情
      * @param unionId 微信客户unionId
      */
-    Object getWxCustomerDetails(String unionId);
+    JSONObject getWxCustomerDetails(String unionId);
 
 }
