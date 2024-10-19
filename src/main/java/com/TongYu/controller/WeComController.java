@@ -3,7 +3,6 @@ package com.TongYu.controller;
 import com.TongYu.config.ApiResponse;
 import com.TongYu.config.GlobalCache;
 import com.TongYu.service.WeComService;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
