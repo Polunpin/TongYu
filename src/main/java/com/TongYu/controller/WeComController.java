@@ -69,7 +69,7 @@ public class WeComController {
      * jsCode2session|获取 session_key
      * @param jsCode 前端获取的 code
      */
-    @PostMapping("/jsCode2session")
+    @GetMapping("/jsCode2session")
     public ApiResponse jsCode2session(String jsCode) {
         return ApiResponse.ok(weComService.jsCode2session(jsCode));
     }
