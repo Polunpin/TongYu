@@ -81,8 +81,8 @@ public class WeComServiceImpl implements WeComService {
     public String jsCode2session(String jsCode) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(4);
         //定义query参数
-        params.add("appid", "wx3e5902a3e5f51155");
-        params.add("secret", "f2c766e689b40d297115cdf7a246e8f7");
+        params.add("appid", "wx5745b3f0a911e8d8");
+        params.add("secret", "9a4e5d01d729f1b9951b7d37a3375da0");
         params.add("js_code", jsCode);
         params.add("grant_type", "authorization_code");
         //定义url参数
