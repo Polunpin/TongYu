@@ -1,30 +1,13 @@
 package com.TongYu.controller;
 
 import com.TongYu.config.ApiResponse;
-import com.TongYu.controller.Source.CourseRecordController;
 import com.TongYu.dto.CourseAddRequest;
 import com.TongYu.dto.CourseRequest;
-import com.TongYu.dto.CourseResponse;
-import com.TongYu.model.CourseRecord;
-import com.TongYu.model.Student;
-import com.TongYu.model.Trainer;
-import com.TongYu.service.CourseRecordService;
 import com.TongYu.service.LessonManagementService;
-import com.TongYu.service.StudentService;
-import com.TongYu.service.TrainerService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
 
 /**
  * 课程管理业务逻辑处理

@@ -45,15 +45,15 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         QueryWrapper<Student> studentQw = new QueryWrapper<>();
         studentQw.eq("union_id", unionId);
         Student student = studentService.getOne(studentQw);
-        JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(unionId);
+//        JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(unionId);
         String name = "";
         String avatar = "";
-        if (wxCustomerDetails != null) {
-            //昵称
-            name = wxCustomerDetails.getJSONObject("external_contact").getString("name");
-            //头像
-            avatar = wxCustomerDetails.getJSONObject("external_contact").getString("avatar");
-        }
+//        if (wxCustomerDetails != null) {
+//            //昵称
+//            name = wxCustomerDetails.getJSONObject("external_contact").getString("name");
+//            //头像
+//            avatar = wxCustomerDetails.getJSONObject("external_contact").getString("avatar");
+//        }
         // 学员的课时信息
         PersonalInfoResponse personalInfo = new PersonalInfoResponse();
         if (student != null) {
@@ -82,7 +82,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             // 学员不存在时返回默认值
             personalInfo.setId(0L);
             personalInfo.setStuName(name);
-            personalInfo.setHeadImgUrl("");
+            personalInfo.setHeadImgUrl(avatar);
             personalInfo.setTotal(0);
             personalInfo.setGive(0);
             personalInfo.setLave(0);
