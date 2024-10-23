@@ -10,6 +10,7 @@
             <result property="endTime" column="end_time" jdbcType="DATE"/>
             <result property="longitude" column="longitude" jdbcType="VARCHAR"/>
             <result property="latitude" column="latitude" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
             <result property="notes" column="notes" jdbcType="VARCHAR"/>
             <result property="nature" column="nature" jdbcType="OTHER"/>
             <result property="content" column="content" jdbcType="VARCHAR"/>
@@ -23,7 +24,7 @@
 
     <sql id="Base_Column_List">
         id,start_time,end_time,
-        longitude,latitude,notes,nature,
+        longitude,latitude,address,notes,nature,
         content,performance,proposal,
         state,student_id,trainer_id,
         creat_time

@@ -109,6 +109,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             if (courseRecord.getTrainerId() != null) {
                 Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
                 courseResponse.setTrainerName(trainer.getTrainerName());
+                // 教练头像 TODO 待完善
+                courseResponse.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
             }
             //预约日期
             LocalDateTime startDateTime = courseRecord.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();

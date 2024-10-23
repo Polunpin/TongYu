@@ -46,6 +46,11 @@ public class CourseRecord implements Serializable {
     private String latitude;
 
     /**
+     * 接送地址
+     */
+    private String address;
+
+    /**
      * 预约备注
      */
     private String notes;
