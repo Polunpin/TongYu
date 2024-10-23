@@ -17,8 +17,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -132,9 +131,16 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public Object courseRecordList(CourseRequest courseRequest) {
         List<CourseResponse> courseResponses = new ArrayList<>();
+        // 管理员角色
+        Set<String> workUserIds = new HashSet<>(Arrays.asList("LanYiPing01", "tomorrow", "LanYiPing"));
+
+        // 根据教练id(企微)查询教练信息
         QueryWrapper<Trainer> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("work_user_id", courseRequest.getWorkUserId());
-        courseRequest.setTrainerId(String.valueOf(trainerService.getOne(queryWrapper).getId()));
+        //判断是否为管理员角色,如果不是管理员角色，则只能查询自己的课单
+        if (!workUserIds.contains(courseRequest.getWorkUserId())) {
+            courseRequest.setTrainerId(String.valueOf(trainerService.getOne(queryWrapper).getId()));
+        }
         Page<CourseRecord> courseRecordPage = courseRecordService.listInfo(courseRequest);
         for (CourseRecord courseRecord : courseRecordPage.getRecords()) {
             CourseResponse courseResponse = new CourseResponse();
