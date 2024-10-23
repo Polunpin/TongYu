@@ -2,7 +2,6 @@ package com.TongYu.service;
 
 import com.TongYu.dto.TrainerMobileResponse;
 import com.TongYu.dto.TrainerRequest;
-import com.TongYu.model.Student;
 import com.TongYu.model.Trainer;
 import com.baomidou.mybatisplus.extension.service.IService;
 

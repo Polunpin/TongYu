@@ -13,11 +13,10 @@ class ByteGroup {
         return bytes;
     }
 
-    public ByteGroup addBytes(byte[] bytes) {
+    public void addBytes(byte[] bytes) {
         for (byte b : bytes) {
             byteContainer.add(b);
         }
-        return this;
     }
 
     public int size() {

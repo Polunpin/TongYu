@@ -1,25 +1,9 @@
-/**
- * 对企业微信发送给企业后台的消息加解密示例代码.
- *
- * @copyright Copyright (c) 1998-2020 Tencent Inc.
- */
-
-// ------------------------------------------------------------------------
-
 package com.TongYu.aes;
-
-/**
- * 针对 org.json.JSONObject,
- * 要编译打包架包json
- * 官方源码下载地址 : https://github.com/stleary/JSON-java, jar包下载地址 : https://mvnrepository.com/artifact/org.json/json
- */
 
 import org.json.JSONObject;
 
-
 /**
  * JsonParse class
- *
  * 提供提取消息格式中的密文及生成回复消息格式的接口.
  */
 class JsonParse {
@@ -28,7 +12,6 @@ class JsonParse {
      * 提取出 JSON 包中的加密消息
      * @param jsontext 待提取的json字符串
      * @return 提取出的加密消息字符串
-     * @throws AesException
      */
     public static Object[] extract(String jsontext) throws AesException {
         Object[] result = new Object[3];
@@ -44,7 +27,6 @@ class JsonParse {
             result[2] = agentID;
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new AesException(AesException.ParseJsonError);
         }
     }

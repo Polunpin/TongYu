@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.time.LocalTime.now;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 /**

@@ -1,6 +1,8 @@
 package com.TongYu.aes;
 
-@SuppressWarnings("serial")
+import lombok.Getter;
+
+@Getter
 public class AesException extends Exception {
 
     public final static int OK = 0;
@@ -16,7 +18,7 @@ public class AesException extends Exception {
     public final static int DecodeBase64Error = -40010;
     public final static int GenReturnJsonError = -40011;
 
-    private int code;
+    private final int code;
 
     public AesException(int code) {
         super(getMessage(code));
@@ -50,10 +52,6 @@ public class AesException extends Exception {
             default:
                 return null; // cannot be
         }
-    }
-
-    public int getCode() {
-        return code;
     }
 
 }

@@ -1,6 +1,5 @@
 package com.TongYu.config;
 
-import com.TongYu.controller.WeComController;
 import com.TongYu.service.WeComService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;

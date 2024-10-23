@@ -28,7 +28,7 @@
 
     <sql id="Base_Column_List">
         id,union_Id,external_user_id,trainer_Id,
-        stu_name,gender,telephone,addWay,
+        stu_name,gender,telephone,add_way,
         channel,total,give,
         lave,used,consult_date,
         intention,analysis,stage,

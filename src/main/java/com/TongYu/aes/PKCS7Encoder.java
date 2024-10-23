@@ -9,13 +9,14 @@
 package com.TongYu.aes;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
  * 提供基于PKCS7算法的加解密接口.
  */
 class PKCS7Encoder {
-    static Charset CHARSET = Charset.forName("utf-8");
+    static Charset CHARSET = StandardCharsets.UTF_8;
     static int BLOCK_SIZE = 32;
 
     /**
@@ -32,11 +33,11 @@ class PKCS7Encoder {
         }
         // 获得补位所用的字符
         char padChr = chr(amountToPad);
-        String tmp = new String();
+        StringBuilder tmp = new StringBuilder();
         for (int index = 0; index < amountToPad; index++) {
-            tmp += padChr;
+            tmp.append(padChr);
         }
-        return tmp.getBytes(CHARSET);
+        return tmp.toString().getBytes(CHARSET);
     }
 
     /**

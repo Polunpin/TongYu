@@ -6,6 +6,7 @@ import com.TongYu.config.GlobalCache;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
+import com.TongYu.util.ConstantUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -155,9 +156,10 @@ public class WeComServiceImpl implements WeComService {
                 log.info("2.1-----添加企业客户事件：{}", resultMap.get("ExternalUserID"));
                 boolean externalUserID = registerStudent(resultMap.get("ExternalUserID"));
                 log.info("2.2-----添加企业客户事件-注册结果：{}", externalUserID);
+                return externalUserID;
             }
         }
-        return "success";
+        return null;
     }
 
 
@@ -199,7 +201,9 @@ public class WeComServiceImpl implements WeComService {
             String nonce = request.getParameter("nonce");
             log.info("企业微信加密签名: {},时间戳: {},随机数: {}", msgSignature, timeStamp, nonce);
             String sMsg = wxcpt.DecryptMsg(msgSignature, timeStamp, nonce, body);
-            Map<String, String> resultMap = new HashMap<String, String>(16);
+            Map<String, String> resultMap = new HashMap<>(16);
+            //TODO 解析参数
+            resultMap = ConstantUtil.parseXmlToMap(sMsg, resultMap);
             log.info("decrypt密文转为map结果为{}", resultMap);
             log.info("=========参数解析结束=========");
             return resultMap;
