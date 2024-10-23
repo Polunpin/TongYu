@@ -3,6 +3,7 @@ package com.TongYu.controller;
 import com.TongYu.config.ApiResponse;
 import com.TongYu.dto.CourseAddRequest;
 import com.TongYu.dto.CourseRequest;
+import com.TongYu.model.CourseRecord;
 import com.TongYu.service.LessonManagementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,17 @@ public class LessonManagementController {
     }
 
     /**
+     * 更新课单信息
+     *
+     */
+    @PostMapping("/updateCourseRecord")
+    public ApiResponse updateCourseRecord(@RequestBody CourseRecord courseRecord) {
+        return ApiResponse.ok(lessonManagementService.updateCourseRecord(courseRecord));
+    }
+
+
+
+    /**
      * 根据学员ID查询课后反馈信息
      *
      * @return CourseResponse 课后反馈信息
@@ -68,6 +80,16 @@ public class LessonManagementController {
         return ApiResponse.ok(lessonManagementService.courseRecordList(courseRequest));
     }
 
+    /**
+     * 学员课时统计
+     *
+     * @param workUserId 教练ID
+     * @return ApiResponse
+     */
+    @GetMapping("/studentCourseCount")
+    public ApiResponse studentCourseCount(String workUserId, String studentName) {
+        return ApiResponse.ok(lessonManagementService.studentCourseCount(workUserId,studentName));
+    }
 
 }
 

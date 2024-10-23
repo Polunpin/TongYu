@@ -1,8 +1,12 @@
 package com.TongYu.service;
 
+import com.TongYu.dto.TrainerMobileResponse;
+import com.TongYu.dto.TrainerRequest;
 import com.TongYu.model.Student;
 import com.TongYu.model.Trainer;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author lanyiping
@@ -11,4 +15,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TrainerService extends IService<Trainer> {
 
+    /**
+     * 查询教练列表|移动端使用
+     */
+    List<TrainerMobileResponse> listInfoMobile(TrainerRequest trainerRequest);
 }

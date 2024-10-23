@@ -19,6 +19,11 @@ public class CourseRequest {
     private String trainerId;
 
     /**
+     * 教练ID(企微标识)
+     */
+    private String workUserId;
+
+    /**
      * 课单状态
      */
     private String state;

@@ -1,14 +1,17 @@
 package com.TongYu.service.impl;
 
-import com.TongYu.config.ApiResponse;
+import com.TongYu.aes.AesException;
+import com.TongYu.aes.WXBizJsonMsgCrypt;
 import com.TongYu.config.GlobalCache;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lanyiping
@@ -35,6 +41,12 @@ public class WeComServiceImpl implements WeComService {
     private String spaceId;
     @Value("${wx.father-id}")
     private String fatherId;
+    @Value("${wx.corpId}")
+    private String corpId;
+    @Value("${wx.corpSecret}")
+    private String corpSecret;
+    @Value("${wx.encodingAESKey}")
+    private String encodingAESKey;
     @Resource
     public StudentService studentService;
 
@@ -74,7 +86,23 @@ public class WeComServiceImpl implements WeComService {
 
     @Override
     public void getCorpAccessToken() {
+        GlobalCache.remove("access_token");
 
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(2);
+        //定义query参数
+        params.add("corpid", corpId);
+        params.add("corpsecret", corpSecret);
+        //定义url参数
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken")
+                .queryParams(params).toUriString();
+        RestTemplate restTemplate = new RestTemplate();
+        //获取access_token,get请求
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        // 将响应体转换为 JSONObject
+        JSONObject object = JSONObject.parseObject(response.getBody());
+        // 缓存access_token
+        GlobalCache.put("access_token", object.get("access_token"));
+        log.info("更新AccessToken成功，有效期{}秒；access_token：{}", object.get("expires_in"), object.get("access_token"));
     }
 
     @Override
@@ -95,11 +123,11 @@ public class WeComServiceImpl implements WeComService {
     }
 
     @Override
-    public JSONObject getWxCustomerDetails(String unionId) {
+    public JSONObject getWxCustomerDetails(String externalUserId) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>(2);
         //定义query参数
         params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
-        params.add("external_userid", unionId);
+        params.add("external_userid", externalUserId);
         //定义url参数
         String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get")
                 .queryParams(params).toUriString();
@@ -107,6 +135,107 @@ public class WeComServiceImpl implements WeComService {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return JSON.parseObject(response.getBody());
+    }
+
+    @Override
+    public Object getCallBack(HttpServletRequest request, String body) throws AesException {
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        String jsonString = JSONObject.toJSONString(parameterMap);
+        if (body == null) {//get
+            log.info("1---GET--企业微信回调参数：{}", jsonString);
+            return verificationUrl(request);
+        } else {//post
+            org.json.JSONObject bodyJson = XML.toJSONObject(body).getJSONObject("xml");
+            log.info("2---POST--企业微信回调参数：{}, 解析参数：{}", jsonString, bodyJson);
+            Map<String, String> resultMap = getRequestParameter(request, String.valueOf(bodyJson));
+            //事件的类型|添加企业客户事件
+            if (resultMap.get("Event").equals("change_external_contact") &&
+                    resultMap.get("ChangeType").equals("add_external_contact")) {
+                //添加客服，为企微注册用户
+                log.info("2.1-----添加企业客户事件：{}", resultMap.get("ExternalUserID"));
+                boolean externalUserID = registerStudent(resultMap.get("ExternalUserID"));
+                log.info("2.2-----添加企业客户事件-注册结果：{}", externalUserID);
+            }
+        }
+        return "success";
+    }
+
+
+    /**
+     * 验证回调URL
+     *
+     */
+    public Object verificationUrl(HttpServletRequest request) throws AesException {
+        log.info("===验证URL有效性开始");
+        String sEchoStr; //需要返回的明文
+        try {
+            WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt( "uxzZ3", encodingAESKey, corpId);
+
+            String msgSignature = request.getParameter("msg_signature");
+            String timeStamp = request.getParameter("timestamp");
+            String nonce = request.getParameter("nonce");
+            String echostr = request.getParameter("echostr");
+            sEchoStr = wxcpt.VerifyURL(msgSignature, timeStamp, nonce, echostr);
+            log.info("===验证URL有效性结束");
+            return sEchoStr;
+        } catch (AesException e) {
+            log.error("验证URL失败，错误原因请查看异常:{}", e.getCode());
+            throw new AesException(e.getCode());
+        }
+    }
+
+    /**
+     * 企业微信回调参数解析
+     *
+     */
+    public Map<String, String> getRequestParameter(HttpServletRequest request, String body) throws AesException {
+        log.info("=========参数解析开始=========");
+
+        try {
+            WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt( "uxzZ3", encodingAESKey, corpId);
+
+            String msgSignature = request.getParameter("msg_signature");
+            String timeStamp = request.getParameter("timestamp");
+            String nonce = request.getParameter("nonce");
+            log.info("企业微信加密签名: {},时间戳: {},随机数: {}", msgSignature, timeStamp, nonce);
+            String sMsg = wxcpt.DecryptMsg(msgSignature, timeStamp, nonce, body);
+            Map<String, String> resultMap = new HashMap<String, String>(16);
+            log.info("decrypt密文转为map结果为{}", resultMap);
+            log.info("=========参数解析结束=========");
+            return resultMap;
+        } catch (AesException e) {
+            log.error("密文参数解析失败，错误原因请查看异常:{}", e.getMessage());
+            throw new AesException(e.getCode());
+        }
+    }
+
+    /**
+     * 用户注册
+     *  1. 查询企业微信用户
+     *  2. 注册学员信息
+     *  3. 关联学员与企业微信用户的关系 unionId--external_userid
+     * @param externalUserId 外部联系人ID
+     * @return 注册结果
+     */
+    public boolean registerStudent(String externalUserId) {
+        QueryWrapper<Student> wrapper = new QueryWrapper<>();
+        wrapper.eq("external_user_id", externalUserId);
+        //先查询，存在时不保存（防止删除、重复添加行为）
+        Student studentRes = studentService.getOne(wrapper);
+        if (studentRes == null) {
+            Student student = new Student();
+            student.setExternalUserId(externalUserId);
+            JSONObject wxCustomerDetails = getWxCustomerDetails(externalUserId);
+
+            log.info("用户注册--企业微信客户详情：{}", wxCustomerDetails);
+            student.setUnionId(wxCustomerDetails.getJSONObject("external_contact").getString("unionid"));
+            student.setGender(wxCustomerDetails.getJSONObject("external_contact").getString("gender"));
+            student.setAddWay(wxCustomerDetails.getJSONArray("follow_user").getJSONObject(0).getString("add_way"));
+            student.setChannel(wxCustomerDetails.getJSONArray("follow_user").getJSONObject(0).getString("state"));
+            //注册学员信息-学员与企业微信用户的关系关联
+            return studentService.save(student);
+        }
+        return false;
     }
 }
 

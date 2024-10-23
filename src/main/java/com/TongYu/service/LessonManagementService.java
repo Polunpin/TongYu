@@ -3,7 +3,7 @@ package com.TongYu.service;
 import com.TongYu.dto.CourseAddRequest;
 import com.TongYu.dto.CourseRequest;
 import com.TongYu.dto.PersonalInfoResponse;
-import com.TongYu.model.Student;
+import com.TongYu.model.CourseRecord;
 
 public interface LessonManagementService {
 
@@ -37,4 +37,8 @@ public interface LessonManagementService {
      * @return ApiResponse
      */
     Object courseRecordList(CourseRequest courseRequest);
+
+    Object updateCourseRecord(CourseRecord courseRecord);
+
+    Object studentCourseCount(String trainerId, String studentName);
 }

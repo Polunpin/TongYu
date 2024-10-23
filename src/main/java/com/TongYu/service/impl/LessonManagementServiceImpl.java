@@ -1,10 +1,7 @@
 package com.TongYu.service.impl;
 
 import com.TongYu.config.ApiResponse;
-import com.TongYu.dto.CourseAddRequest;
-import com.TongYu.dto.CourseRequest;
-import com.TongYu.dto.CourseResponse;
-import com.TongYu.dto.PersonalInfoResponse;
+import com.TongYu.dto.*;
 import com.TongYu.model.CourseRecord;
 import com.TongYu.model.Student;
 import com.TongYu.model.Trainer;
@@ -12,22 +9,26 @@ import com.TongYu.service.*;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.time.LocalTime.now;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 /**
  * @author lanyiping
- * @description 针对表【student(学员表)】的数据库操作Service实现
+ * @description 课单管理
  * @createDate 2024-10-11 00:50:56
  */
+@Slf4j
 @Service
 public class LessonManagementServiceImpl implements LessonManagementService {
 
@@ -45,15 +46,6 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         QueryWrapper<Student> studentQw = new QueryWrapper<>();
         studentQw.eq("union_id", unionId);
         Student student = studentService.getOne(studentQw);
-//        JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(unionId);
-        String name = "";
-        String avatar = "";
-//        if (wxCustomerDetails != null) {
-//            //昵称
-//            name = wxCustomerDetails.getJSONObject("external_contact").getString("name");
-//            //头像
-//            avatar = wxCustomerDetails.getJSONObject("external_contact").getString("avatar");
-//        }
         // 学员的课时信息
         PersonalInfoResponse personalInfo = new PersonalInfoResponse();
         if (student != null) {
@@ -63,7 +55,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             personalInfo.setGive(student.getGive());
             personalInfo.setLave(student.getLave());
             personalInfo.setUsed(student.getUsed());
-            personalInfo.setHeadImgUrl(avatar);
+            JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
+            personalInfo.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
             //根据学生id查询课程记录-已上课时
             QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
             // 学生id
@@ -81,8 +74,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         } else {
             // 学员不存在时返回默认值
             personalInfo.setId(0L);
-            personalInfo.setStuName(name);
-            personalInfo.setHeadImgUrl(avatar);
+            personalInfo.setStuName("");
+            personalInfo.setHeadImgUrl("");
             personalInfo.setTotal(0);
             personalInfo.setGive(0);
             personalInfo.setLave(0);
@@ -138,6 +131,9 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public Object courseRecordList(CourseRequest courseRequest) {
         List<CourseResponse> courseResponses = new ArrayList<>();
+        QueryWrapper<Trainer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("work_user_id", courseRequest.getWorkUserId());
+        courseRequest.setTrainerId(String.valueOf(trainerService.getOne(queryWrapper).getId()));
         Page<CourseRecord> courseRecordPage = courseRecordService.listInfo(courseRequest);
         for (CourseRecord courseRecord : courseRecordPage.getRecords()) {
             CourseResponse courseResponse = new CourseResponse();
@@ -156,6 +152,44 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             courseResponses.add(courseResponse);
         }
         return ApiResponse.ok(courseResponses);
+    }
+
+    @Override
+    public Object updateCourseRecord(CourseRecord courseRecord) {
+        return courseRecordService.updateById(courseRecord);
+    }
+
+    @Override
+    public List<StudentCourseResponse> studentCourseCount(String workUserId, String studentName) {
+        //根据当前教练唯一标识（企微）查询教练id
+        Long trainerId = trainerService.getOne(new QueryWrapper<Trainer>().eq("work_user_id", workUserId)).getId();
+        // 根据教练id+学员姓名 查询学生列表
+        QueryWrapper<Student> studentQw = new QueryWrapper<>();
+        studentQw.eq("trainer_id", trainerId);
+        if(studentName != null && !studentName.isEmpty()){
+            studentQw.like("stu_name", studentName);
+        }
+        List<Student> studentList = studentService.list(studentQw);
+        List<StudentCourseResponse> studentCourses = new ArrayList<>();
+        // 根据学生id查询课程记录
+        studentList.forEach(student -> {
+            QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
+            courseRecordQw.eq("student_id", student.getId());
+            courseRecordQw.orderByDesc("end_time").last("limit 1");
+            CourseRecord courseRecord = courseRecordService.getOne(courseRecordQw);
+            //上次练车时间+相差天数
+            if (courseRecord != null) {
+                StudentCourseResponse studentCourseResponse = new StudentCourseResponse();
+                copyProperties(student, studentCourseResponse);
+                // 将 courseRecord.getEndTime() 从 Date 转换为 LocalDateTime
+                LocalDateTime endTime = courseRecord.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                // 计算相差的天数(最近一次练车时间-当前时间)
+                long daysBetween = ChronoUnit.DAYS.between(endTime, LocalDateTime.now());
+                studentCourseResponse.setLastTrainTime(daysBetween + "天前");
+                studentCourses.add(studentCourseResponse);
+            }
+        });
+        return studentCourses;
     }
 }
 

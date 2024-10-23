@@ -1,7 +1,10 @@
 package com.TongYu.service;
 
+import com.TongYu.aes.AesException;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author lanyiping
@@ -35,8 +38,11 @@ public interface WeComService {
 
     /**
      * 获取微信客户详情
-     * @param unionId 微信客户unionId
+     * @param externalUserId 微信外部联系人ID
      */
-    JSONObject getWxCustomerDetails(String unionId);
+    JSONObject getWxCustomerDetails(String externalUserId);
 
+    Object getCallBack(HttpServletRequest request, String body) throws AesException;
+
+    boolean registerStudent(String externalUserId);
 }

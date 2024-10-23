@@ -1,20 +1,15 @@
 package com.TongYu.controller;
 
+import com.TongYu.aes.AesException;
 import com.TongYu.config.ApiResponse;
-import com.TongYu.config.GlobalCache;
 import com.TongYu.service.WeComService;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 企微相关接口
@@ -31,7 +26,8 @@ public class WeComController {
 
     /**
      * 上传驾驶证图片至企业微信微盘
-     * @param file 驾驶证图片
+     *
+     * @param file  驾驶证图片
      * @param stuId 学生id
      */
     @PostMapping("/uploadFile")
@@ -46,27 +42,12 @@ public class WeComController {
      */
     @Scheduled(cron = "0 0 */2 * * ?")
     public void getCorpAccessToken() {
-        GlobalCache.remove("access_token");
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(2);
-        //定义query参数
-        params.add("corpid", "wwcb10560218a47a01");
-        params.add("corpsecret", "7pceCMURfdDHC0iXvKY9JIE-GRSVzvd-25pjxIqom9g");
-        //定义url参数
-        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken")
-                .queryParams(params).toUriString();
-        RestTemplate restTemplate = new RestTemplate();
-        //获取access_token,get请求
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        // 将响应体转换为 JSONObject
-        JSONObject object = JSONObject.parseObject(response.getBody());
-        // 缓存access_token
-        GlobalCache.put("access_token", object.get("access_token"));
-        log.info("更新AccessToken成功，有效期{}秒；access_token：{}", object.get("expires_in"), object.get("access_token"));
+        weComService.getCorpAccessToken();
     }
 
     /**
      * jsCode2session|获取 session_key
+     *
      * @param jsCode 前端获取的 code
      */
     @GetMapping("/jsCode2session")
@@ -76,10 +57,39 @@ public class WeComController {
 
     /**
      * 获取微信客户详情
-     * @param unionId 微信客户unionId
+     *
+     * @param externalUserId 微信外部联系人ID
+     * @return 微信客户详情
      */
     @GetMapping("/getWxCustomerDetails")
-    public ApiResponse getWxCustomerDetails(String unionId) {
-        return ApiResponse.ok(weComService.getWxCustomerDetails(unionId));
+    public ApiResponse getWxCustomerDetails(String externalUserId) {
+        return ApiResponse.ok(weComService.getWxCustomerDetails(externalUserId));
     }
+
+    /**
+     * 注册用户测试
+     *
+     * @param externalUserId 微信外部联系人ID
+     * @return 注册结果
+     */
+    @GetMapping("/registerStudent")
+    public ApiResponse registerStudent(String externalUserId) {
+        return ApiResponse.ok(weComService.registerStudent(externalUserId));
+    }
+
+
+    /**
+     * 企业微信回调
+     * 3.1 支持Http Get请求验证URL有效性
+     * 3.2 支持Http Post请求接收业务数据
+     *
+     * @return "success"
+     */
+    @RequestMapping(value = "/getCallBack", method = {RequestMethod.GET, RequestMethod.POST})
+    public Object getCallBack(HttpServletRequest request, @RequestBody(required = false) String body) throws AesException {
+        weComService.getCallBack(request, body);
+        return "success";
+    }
+
+
 }

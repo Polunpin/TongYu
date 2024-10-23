@@ -12,6 +12,12 @@ public class TrainerRequest {
      * 教练ID
      */
     private String trainerId;
+
+    /**
+     * 企业微信用户ID
+     */
+    private String workUserId;
+
     /**
      * 教练名称
      */

@@ -26,11 +26,9 @@ public class CourseRecordServiceImpl extends ServiceImpl<CourseRecordMapper, Cou
         //查询条件 - 状态 - 教练
         QueryWrapper<CourseRecord> queryWrapper = new QueryWrapper<>();
         //状态
-        if (!courseRequest.getState().isEmpty()) {
-            queryWrapper.eq("state", courseRequest.getState());
-        }
+        queryWrapper.eq("state", courseRequest.getState());
         //教练
-        if (!courseRequest.getTrainerId().isEmpty()) {
+        if (courseRequest.getTrainerId() != null && !courseRequest.getTrainerId().trim().isEmpty()) {
             queryWrapper.eq("trainer_id", courseRequest.getTrainerId());
         }
         return this.page(page, queryWrapper);

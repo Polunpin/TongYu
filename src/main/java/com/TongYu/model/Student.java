@@ -27,6 +27,11 @@ public class Student implements Serializable {
     private String unionId;
 
     /**
+     * 外部联系人的userid
+     */
+    private String externalUserId;
+
+    /**
      * 教练ID
      */
     private Long trainerId;
@@ -39,7 +44,7 @@ public class Student implements Serializable {
     /**
      * 性别
      */
-    private Object gender;
+    private String gender;
 
     /**
      * 手机号
@@ -54,7 +59,12 @@ public class Student implements Serializable {
     /**
      * 来源
      */
-    private Object channel;
+    private String addWay;
+
+    /**
+     * 渠道
+     */
+    private String channel;
 
     /**
      * 总课时
@@ -94,7 +104,7 @@ public class Student implements Serializable {
     /**
      * 跟进状态
      */
-    private Object stage;
+    private String stage;
 
     /**
      * 创建时间

@@ -39,6 +39,14 @@ public class TrainerController {
         return ApiResponse.ok(pages);
     }
 
+    /**
+     * 查询教练列表|移动端使用
+     */
+    @PostMapping("/listInfoMobile")
+    public ApiResponse listInfoMobile(@RequestBody TrainerRequest trainerRequest) {
+        return ApiResponse.ok(trainerService.listInfoMobile(trainerRequest));
+    }
+
     @PostMapping("/save")
     public ApiResponse save(@RequestBody Trainer trainer) {
         return ApiResponse.ok(trainerService.save(trainer));
