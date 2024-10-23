@@ -108,7 +108,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             copyProperties(courseRecord, courseResponse);
             if (courseRecord.getTrainerId() != null) {
                 Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
-                courseResponse.setTrainerName(trainer.getTrainerName());
+                courseResponse.setTrainerName(trainer.getTrainerName().isEmpty()?"待分派教练":trainer.getTrainerName());
                 // 教练头像 TODO 待完善
                 courseResponse.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
             }
