@@ -48,7 +48,7 @@ public class LessonManagementController {
     }
 
     /**
-     * 查询学员的预约信息
+     * 查询学员的课单信息
      * @param externalUserId 学员ID（微信标识）
      * @return ApiResponse
      */
