@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 /**
 * @author lanyiping
 * @description 针对表【trainer(教练表)】的数据库操作Service实现
@@ -31,16 +33,11 @@ public class TrainerServiceImpl extends ServiceImpl<TrainerMapper, Trainer>
         List<TrainerMobileResponse> trainerMobileList = new ArrayList<>();
         list.forEach(trainer -> {
             TrainerMobileResponse trainerMobile = new TrainerMobileResponse();
-            trainerMobile.setId(trainer.getId());
-            trainerMobile.setTrainerName(trainer.getTrainerName());
-            trainerMobile.setNumberplate(trainer.getNumberplate());
-            trainerMobile.setArea(trainer.getArea());
+            copyProperties(trainer, trainerMobile);
+            // 教练头像 TODO 待完善
+            trainerMobile.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
             trainerMobileList.add(trainerMobile);
         });
         return trainerMobileList;
     }
 }
-
-
-
-

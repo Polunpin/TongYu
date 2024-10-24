@@ -11,4 +11,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TrainerMobileResponse extends Trainer {
 
+    /**
+     * 教练头像
+     */
+    private String trainerAvatar;
 }
