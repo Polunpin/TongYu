@@ -43,8 +43,29 @@ public class LessonManagementController {
      * @return ApiResponse
      */
     @PostMapping("/classReservation")
-    public ApiResponse classReservation(@RequestBody CourseAddRequest courseAddRequest) {
-        return ApiResponse.ok(lessonManagementService.classReservation(courseAddRequest));
+    public ApiResponse reservation(@RequestBody CourseAddRequest courseAddRequest) {
+        return ApiResponse.ok(lessonManagementService.reservation(courseAddRequest));
+    }
+
+    /**
+     * 查询学员的预约信息
+     * @param externalUserId 学员ID（微信标识）
+     * @return ApiResponse
+     */
+    @GetMapping("/getReservationByExternalUserId")
+    public ApiResponse getReservationByExternalUserId(String externalUserId) {
+        return ApiResponse.ok(lessonManagementService.getReservationByExternalUserId(externalUserId));
+    }
+
+    /**
+     * 添加预约信息（教练侧）
+     *
+     * @param courseAddRequest 预约信息（学员个人信息+课程信息）
+     * @return ApiResponse
+     */
+    @PostMapping("/addCourseRecord")
+    public ApiResponse addCourseRecord(@RequestBody CourseAddRequest courseAddRequest) {
+        return ApiResponse.ok(lessonManagementService.addCourseRecord(courseAddRequest));
     }
 
     /**
@@ -77,7 +98,7 @@ public class LessonManagementController {
      */
     @PostMapping("/courseRecordList")
     public ApiResponse courseRecordList(@RequestBody CourseRequest courseRequest) {
-        return ApiResponse.ok(lessonManagementService.courseRecordList(courseRequest));
+        return lessonManagementService.courseRecordList(courseRequest);
     }
 
     /**

@@ -85,13 +85,16 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     }
 
     @Override
-    public Boolean classReservation(CourseAddRequest courseAddRequest) {
-        Student student = new Student();
-        student.setId(courseAddRequest.getStudentId());
-        student.setStuName(courseAddRequest.getStuName());
-        student.setTelephone(courseAddRequest.getTelephone());
-        student.setImage(courseAddRequest.getImageId());
-        studentService.updateById(student);
+    public Boolean reservation(CourseAddRequest courseAddRequest) {
+        //手机号不为空，则更新学生信息
+        if (!courseAddRequest.getTelephone().isEmpty()) {
+            Student student = new Student();
+            student.setId(courseAddRequest.getStudentId());
+            student.setStuName(courseAddRequest.getStuName());
+            student.setTelephone(courseAddRequest.getTelephone());
+            student.setImage(courseAddRequest.getImageId());
+            studentService.updateById(student);
+        }
 
         // TODO 发送服务通知：预约成功通知
         return courseRecordService.save(courseAddRequest);
@@ -100,14 +103,13 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public Object feedback(String studentId) {
         List<CourseResponse> courseRecords = new ArrayList<>();
-        List<CourseRecord> courseRecordList =
-                courseRecordService.list(new QueryWrapper<CourseRecord>().eq("student_id", studentId));
+        List<CourseRecord> courseRecordList = courseRecordService.list(new QueryWrapper<CourseRecord>().eq("student_id", studentId));
         for (CourseRecord courseRecord : courseRecordList) {
             CourseResponse courseResponse = new CourseResponse();
             copyProperties(courseRecord, courseResponse);
             if (courseRecord.getTrainerId() != null) {
                 Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
-                courseResponse.setTrainerName(trainer.getTrainerName().isEmpty()?"待分派教练":trainer.getTrainerName());
+                courseResponse.setTrainerName(trainer.getTrainerName().isEmpty() ? "待分派教练" : trainer.getTrainerName());
                 // 教练头像 TODO 待完善
                 courseResponse.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
             }
@@ -129,7 +131,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     }
 
     @Override
-    public Object courseRecordList(CourseRequest courseRequest) {
+    public ApiResponse courseRecordList(CourseRequest courseRequest) {
         List<CourseResponse> courseResponses = new ArrayList<>();
         // 管理员角色
         Set<String> workUserIds = new HashSet<>(Arrays.asList("LanYiPing01", "tomorrow", "LanYiPing"));
@@ -158,7 +160,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             }
             courseResponses.add(courseResponse);
         }
-        return ApiResponse.ok(courseResponses);
+        return ApiResponse.ok((int) courseRecordPage.getTotal(), courseResponses);
     }
 
     @Override
@@ -181,7 +183,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             studentQw.eq("trainer_id", trainerId);
         }
 
-        if(studentName != null && !studentName.isEmpty()){
+        if (studentName != null && !studentName.isEmpty()) {
             studentQw.like("stu_name", studentName);
         }
 
@@ -207,6 +209,20 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             }
         });
         return studentCourses;
+    }
+
+    @Override
+    public Object addCourseRecord(CourseAddRequest courseAddRequest) {
+        return courseRecordService.save(courseAddRequest);
+    }
+
+    @Override
+    public Object getReservationByExternalUserId(String externalUserId) {
+        Student student = studentService.getOne(new QueryWrapper<Student>().eq("external_user_id", externalUserId));
+        QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
+        courseRecordQw.eq("student_id", student.getId());
+        courseRecordQw.orderByDesc("end_time").last("limit 1");
+        return courseRecordService.getOne(courseRecordQw);
     }
 }
 
