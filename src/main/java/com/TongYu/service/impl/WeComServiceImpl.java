@@ -3,6 +3,7 @@ package com.TongYu.service.impl;
 import com.TongYu.aes.AesException;
 import com.TongYu.aes.WXBizJsonMsgCrypt;
 import com.TongYu.config.GlobalCache;
+import com.TongYu.dto.JsSdkResponse;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.utility.RandomString;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
+import java.security.MessageDigest;
+import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -240,6 +246,47 @@ public class WeComServiceImpl implements WeComService {
             return studentService.save(student);
         }
         return false;
+    }
+
+    @SneakyThrows
+    @Override
+    public JsSdkResponse getJsConfig(String pageUrl) {
+        //生成签名的时间戳
+        long timestamp = new Timestamp(new Date().getTime()).getTime();
+        //生成签名的随机串
+        String nonceStr = RandomString.make(16);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(1);
+        //定义query参数
+        params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
+        //定义url参数
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/ticket/get?type=agent_config")
+                .queryParams(params).toUriString();
+        RestTemplate restTemplate = new RestTemplate();
+        //获取access_token,get请求
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        // 将响应体转换为 JSONObject
+        JSONObject jsonObject = JSONObject.parseObject(response.getBody());
+        String ticket = jsonObject.getString("ticket");
+
+        //签名，见 附录-JS-SDK使用权限签名算法
+        String signature = "jsapi_ticket=" + ticket + "&noncestr=" + nonceStr + "&timestamp=" + timestamp + "&url=" + URLDecoder.decode(pageUrl, "UTF-8");
+        byte[] digest = MessageDigest.getInstance("SHA-1").digest(signature.getBytes());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (byte b : digest) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                stringBuilder.append('0');
+            }
+            stringBuilder.append(hex);
+        }
+        JsSdkResponse jsSdkResponse = new JsSdkResponse();
+        jsSdkResponse.setCorpId(corpId);
+        jsSdkResponse.setAgentId("1000006");
+        jsSdkResponse.setTimestamp(timestamp);
+        jsSdkResponse.setNonceStr(nonceStr);
+        jsSdkResponse.setSignature(stringBuilder.toString());
+        return jsSdkResponse;
     }
 }
 

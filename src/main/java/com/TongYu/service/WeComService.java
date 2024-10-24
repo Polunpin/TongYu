@@ -1,6 +1,7 @@
 package com.TongYu.service;
 
 import com.TongYu.aes.AesException;
+import com.TongYu.dto.JsSdkResponse;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,4 +46,6 @@ public interface WeComService {
     Object getCallBack(HttpServletRequest request, String body) throws AesException;
 
     boolean registerStudent(String externalUserId);
+
+    JsSdkResponse getJsConfig(String pageUrl);
 }

@@ -92,4 +92,13 @@ public class WeComController {
     }
 
 
+    /**
+     * 通过config接口注入权限验证配置
+     *
+     * @return jsSdkResponse
+     */
+    @GetMapping(value = "/getJsConfig")
+    public ApiResponse getJsConfig(String pageUrl) {
+        return ApiResponse.ok(weComService.getJsConfig(pageUrl));
+    }
 }
