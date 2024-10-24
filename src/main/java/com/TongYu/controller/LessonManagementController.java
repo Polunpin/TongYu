@@ -70,18 +70,14 @@ public class LessonManagementController {
 
     /**
      * 更新课单信息
-     *
      */
     @PostMapping("/updateCourseRecord")
     public ApiResponse updateCourseRecord(@RequestBody CourseRecord courseRecord) {
         return ApiResponse.ok(lessonManagementService.updateCourseRecord(courseRecord));
     }
 
-
-
     /**
      * 根据学员ID查询课后反馈信息
-     *
      * @return CourseResponse 课后反馈信息
      */
     @GetMapping("/feedback")
