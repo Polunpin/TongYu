@@ -41,6 +41,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     @Override
     public PersonalInfoResponse personalInfo(String unionId) {
+        log.info("获取学员信息unionId:{}", unionId);
         QueryWrapper<Student> studentQw = new QueryWrapper<>();
         studentQw.eq("union_id", unionId);
         Student student = studentService.getOne(studentQw);
