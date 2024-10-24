@@ -41,10 +41,14 @@ public class CourseResponse extends CourseRecord {
      */
     private String appointmentTime;
 
-
     /**
      * 待结算金额
      */
     private String pendingAmount;
+
+    /**
+     * 外部联系人的userid
+     */
+    private String externalUserId;
 
 }

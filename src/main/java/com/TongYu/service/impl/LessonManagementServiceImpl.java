@@ -128,7 +128,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             courseResponse.setAppointmentTime(appointmentTime);
             courseRecords.add(courseResponse);
         }
-        return ApiResponse.ok(courseRecords);
+        return courseRecords;
     }
 
     @Override
@@ -158,6 +158,9 @@ public class LessonManagementServiceImpl implements LessonManagementService {
                 courseResponse.setTrainerName(trainer.getTrainerName());
                 //开始结束时间的 时间差*教练课时费用
                 courseResponse.setPendingAmount(lessonPrice + "元" + "/" + diffInHours + "小时");
+            }
+            if (courseRecord.getStudentId() != null) {
+                courseResponse.setExternalUserId(studentService.getById(courseRecord.getStudentId()).getExternalUserId());
             }
             courseResponses.add(courseResponse);
         }
