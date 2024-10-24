@@ -168,14 +168,23 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     @Override
     public List<StudentCourseResponse> studentCourseCount(String workUserId, String studentName) {
-        //根据当前教练唯一标识（企微）查询教练id
-        Long trainerId = trainerService.getOne(new QueryWrapper<Trainer>().eq("work_user_id", workUserId)).getId();
+
         // 根据教练id+学员姓名 查询学生列表
         QueryWrapper<Student> studentQw = new QueryWrapper<>();
-        studentQw.eq("trainer_id", trainerId);
+
+        // 管理员角色
+        Set<String> workUserIds = new HashSet<>(Arrays.asList("LanYiPing01", "tomorrow", "LanYiPing"));
+        //判断是否为管理员角色,如果不是管理员角色，则只能查询自己的课单
+        if (!workUserIds.contains(workUserId)) {
+            //根据当前教练唯一标识（企微）查询教练id
+            Long trainerId = trainerService.getOne(new QueryWrapper<Trainer>().eq("work_user_id", workUserId)).getId();
+            studentQw.eq("trainer_id", trainerId);
+        }
+
         if(studentName != null && !studentName.isEmpty()){
             studentQw.like("stu_name", studentName);
         }
+
         List<Student> studentList = studentService.list(studentQw);
         List<StudentCourseResponse> studentCourses = new ArrayList<>();
         // 根据学生id查询课程记录
