@@ -201,7 +201,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
                 LocalDateTime endTime = courseRecord.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 // 计算相差的天数(最近一次练车时间-当前时间)
                 long daysBetween = ChronoUnit.DAYS.between(endTime, LocalDateTime.now());
-                studentCourseResponse.setLastTrainTime(daysBetween + "天前");
+                studentCourseResponse.setLastTrainTime(courseRecord.getEndTime());
+                studentCourseResponse.setLastTrainDays(daysBetween + "天前");
                 studentCourses.add(studentCourseResponse);
             }
         });
