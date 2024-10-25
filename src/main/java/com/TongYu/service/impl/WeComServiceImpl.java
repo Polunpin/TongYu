@@ -296,7 +296,7 @@ public class WeComServiceImpl implements WeComService {
         params.add("appid", corpId);
         params.add("agentid", "1000006");
         params.add("state", stateKey);
-        params.add("redirect_uri", "https://web.goldenguard.top");
+        params.add("redirect_uri", "https://web.goldenguard.top/weCom/loginCallBack");
         //定义url参数
         return UriComponentsBuilder.
                 fromUriString("https://login.work.weixin.qq.com/wwlogin/sso/login").queryParams(params).toUriString();
