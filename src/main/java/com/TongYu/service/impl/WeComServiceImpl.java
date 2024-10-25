@@ -318,7 +318,7 @@ public class WeComServiceImpl implements WeComService {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             return response.getBody();
         } else {
-            System.out.println("CSRF OR ERROR 检测到攻击或无效状态!");
+            log.error("CSRF OR ERROR 检测到攻击或无效状态!");
         }
         return null;
     }
