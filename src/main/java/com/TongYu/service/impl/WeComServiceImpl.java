@@ -27,13 +27,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author lanyiping
@@ -137,29 +136,22 @@ public class WeComServiceImpl implements WeComService {
         //定义url参数
         String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get").queryParams(params).toUriString();
         //请求企业微信API
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        return JSON.parseObject(response.getBody());
+        return JSON.parseObject(new RestTemplate().getForEntity(url, String.class).getBody());
     }
 
     @Override
     public Object getCallBack(HttpServletRequest request, String body) throws AesException {
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        String jsonString = JSONObject.toJSONString(parameterMap);
+        String jsonString = JSONObject.toJSONString(request.getParameterMap());
         if (body == null) {//get
             log.info("1---GET--企业微信回调参数：{}", jsonString);
             return verificationUrl(request);
         } else {//post
-            org.json.JSONObject bodyJson = XML.toJSONObject(body).getJSONObject("xml");
-            log.info("2---POST--企业微信回调参数：{}, 解析参数：{}", jsonString, bodyJson);
-            Map<String, String> resultMap = getRequestParameter(request, String.valueOf(bodyJson));
-            //事件的类型|添加企业客户事件
+            log.info("2---POST--企业微信回调参数：{}", jsonString);
+            Map<String, String> resultMap = getRequestParameter(request, String.valueOf(XML.toJSONObject(body).getJSONObject("xml")));
+            //事件类型
             if (resultMap.get("Event").equals("change_external_contact") && resultMap.get("ChangeType").equals("add_external_contact")) {
-                //添加客服，为企微注册用户
-                log.info("2.1-----添加企业客户事件：{}", resultMap.get("ExternalUserID"));
-                boolean externalUserID = registerStudent(resultMap.get("ExternalUserID"));
-                log.info("2.2-----添加企业客户事件-注册结果：{}", externalUserID);
-                return externalUserID;
+                //添加企业客户事件-注册学员信息
+                return registerStudent(resultMap.get("ExternalUserID"));
             }
         }
         return null;
@@ -192,18 +184,14 @@ public class WeComServiceImpl implements WeComService {
      * 企业微信回调参数解析
      */
     public Map<String, String> getRequestParameter(HttpServletRequest request, String body) throws AesException {
-        log.info("=========参数解析开始=========");
-
         try {
             String sMsg = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId).DecryptMsg(
                     request.getParameter("msg_signature"),
                     request.getParameter("timestamp"),
                     request.getParameter("nonce"), body);
             Map<String, String> resultMap = new HashMap<>(16);
-            log.info("参数解析：{}", sMsg);
-            //TODO 解析参数
-            resultMap = ConstantUtil.parseXmlToMap(sMsg, resultMap);
-            log.info("=========参数解析结束=========");
+            //将xml转换为Map
+            ConstantUtil.parseXmlToMap(sMsg, resultMap);
             return resultMap;
         } catch (AesException e) {
             log.error("密文参数解析失败，错误原因请查看异常:{}", e.getMessage());
@@ -221,20 +209,16 @@ public class WeComServiceImpl implements WeComService {
      * @return 注册结果
      */
     public boolean registerStudent(String externalUserId) {
-        QueryWrapper<Student> wrapper = new QueryWrapper<>();
-        wrapper.eq("external_user_id", externalUserId);
         //先查询，存在时不保存（防止删除、重复添加行为）
-        Student studentRes = studentService.getOne(wrapper);
+        Student studentRes = studentService.getOne(new QueryWrapper<Student>().eq("external_user_id", externalUserId));
         if (studentRes == null) {
             Student student = new Student();
             student.setExternalUserId(externalUserId);
-            JSONObject wxCustomerDetails = getWxCustomerDetails(externalUserId);
-
-            log.info("用户注册--企业微信客户详情：{}", wxCustomerDetails);
-            student.setUnionId(wxCustomerDetails.getJSONObject("external_contact").getString("unionid"));
-            student.setGender(wxCustomerDetails.getJSONObject("external_contact").getString("gender"));
-            student.setAddWay(wxCustomerDetails.getJSONArray("follow_user").getJSONObject(0).getString("add_way"));
-            student.setChannel(wxCustomerDetails.getJSONArray("follow_user").getJSONObject(0).getString("state"));
+            JSONObject wxCustomer = getWxCustomerDetails(externalUserId);
+            student.setUnionId(wxCustomer.getJSONObject("external_contact").getString("unionid"));
+            student.setGender(wxCustomer.getJSONObject("external_contact").getString("gender"));
+            student.setAddWay(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("add_way"));
+            student.setChannel(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("state"));
             //注册学员信息-学员与企业微信用户的关系关联
             return studentService.save(student);
         }

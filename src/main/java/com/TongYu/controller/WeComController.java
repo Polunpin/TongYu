@@ -88,7 +88,6 @@ public class WeComController {
      */
     @RequestMapping(value = "/getCallBack", method = {RequestMethod.GET, RequestMethod.POST})
     public Object getCallBack(HttpServletRequest request, @RequestBody(required = false) String body) throws AesException {
-        log.info("收到企业微信回调请求，请求体：{}", body);
         return weComService.getCallBack(request, body);
     }
 
