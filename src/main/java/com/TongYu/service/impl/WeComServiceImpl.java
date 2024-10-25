@@ -195,17 +195,14 @@ public class WeComServiceImpl implements WeComService {
         log.info("=========参数解析开始=========");
 
         try {
-            WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId);
-
-            String msgSignature = request.getParameter("msg_signature");
-            String timeStamp = request.getParameter("timestamp");
-            String nonce = request.getParameter("nonce");
-            log.info("企业微信加密签名: {},时间戳: {},随机数: {}", msgSignature, timeStamp, nonce);
-            String sMsg = wxcpt.DecryptMsg(msgSignature, timeStamp, nonce, body);
+            String sMsg = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId).DecryptMsg(
+                    request.getParameter("msg_signature"),
+                    request.getParameter("timestamp"),
+                    request.getParameter("nonce"), body);
             Map<String, String> resultMap = new HashMap<>(16);
+            log.info("参数解析：{}", sMsg);
             //TODO 解析参数
             resultMap = ConstantUtil.parseXmlToMap(sMsg, resultMap);
-            log.info("decrypt密文转为map结果为{}", resultMap);
             log.info("=========参数解析结束=========");
             return resultMap;
         } catch (AesException e) {
