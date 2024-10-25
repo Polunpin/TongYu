@@ -41,39 +41,21 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     @Override
     public PersonalInfoResponse personalInfo(String unionId) {
-        log.info("获取学员信息unionId:{}", unionId);
-        QueryWrapper<Student> studentQw = new QueryWrapper<>();
-        studentQw.eq("union_id", unionId);
-        Student student = studentService.getOne(studentQw);
+        Student student = studentService.getOne(new QueryWrapper<Student>().eq("union_id", unionId));
         // 学员的课时信息
         PersonalInfoResponse personalInfo = new PersonalInfoResponse();
         if (student != null) {
-            personalInfo.setId(student.getId());
-            personalInfo.setStuName(student.getStuName());
-            personalInfo.setTotal(student.getTotal());
-            personalInfo.setGive(student.getGive());
-            personalInfo.setLave(student.getLave());
-            personalInfo.setUsed(student.getUsed());
+            copyProperties(student, personalInfo);
+            personalInfo.setStuName(student.getStuName()==null?"待约课":student.getStuName());
             JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
             personalInfo.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
-            //根据学生id查询课程记录-已上课时
-            QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
-            // 学生id
-            courseRecordQw.eq("student_id", student.getId());
-            long isAppointment = courseRecordService.count(courseRecordQw);
-            personalInfo.setIsAppointment(isAppointment != 0);
-            // 已完成的课时
-            courseRecordQw.eq("state", "4");
-            long count = courseRecordService.count(courseRecordQw);
-            int levelNumber = 0;
-            if (count > 0) {
-                levelNumber = (int) Math.floorDiv(count, student.getTotal());
-            }
-            personalInfo.setLevelNumber(levelNumber);
+            personalInfo.setIsAppointment(student.getUsed() > 0);
+            //TODO 待完善-熟练度由教练完成
+            personalInfo.setLevelNumber(0);
         } else {
             // 学员不存在时返回默认值
             personalInfo.setId(0L);
-            personalInfo.setStuName("");
+            personalInfo.setStuName("请联系客服");
             personalInfo.setHeadImgUrl("");
             personalInfo.setTotal(0);
             personalInfo.setGive(0);
