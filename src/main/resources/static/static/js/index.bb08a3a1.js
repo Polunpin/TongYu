@@ -629,7 +629,7 @@
         }, c.default.config.productionTip = !1, o.default.mpType = "app";
         var d = new c.default((0, i.default)({store: f.default}, o.default));
         (0, l.default)().then((function (e) {
-            var t = JSON.parse(e.data);
+            var t = JSON.parse(e);
             f.default.commit("setUserId", t.userid), console.log(t, 1111111111111), d.$mount()
         }))
     }, "7fd3": function (e, t, n) {
