@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 企微相关接口
@@ -108,8 +109,8 @@ public class WeComController {
      * @return 企业微信登录链接
      */
     @GetMapping(value = "/getLoginUrl")
-    public ApiResponse getLoginUrl(String redirectUri) {
-        return ApiResponse.ok(weComService.getLoginUrl(redirectUri));
+    public void getLoginUrl(HttpServletResponse response, String redirectUri) {
+        weComService.getLoginUrl(response,redirectUri);
     }
 
     /**

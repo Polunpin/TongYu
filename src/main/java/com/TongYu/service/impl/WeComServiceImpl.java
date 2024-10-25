@@ -26,7 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
@@ -284,8 +284,9 @@ public class WeComServiceImpl implements WeComService {
         return jsSdkResponse;
     }
 
+    @SneakyThrows
     @Override
-    public Object getLoginUrl(String redirectURI) {
+    public void getLoginUrl(HttpServletResponse response, String redirectURI) {
         String stateKey = "WWLogin" + RandomString.make(6);
         GlobalCache.put(stateKey, 1);
 
@@ -298,8 +299,9 @@ public class WeComServiceImpl implements WeComService {
         params.add("state", stateKey);
         params.add("redirect_uri", "https://web.goldenguard.top/weCom/loginCallBack");
         //定义url参数
-        return UriComponentsBuilder.
+        String url = UriComponentsBuilder.
                 fromUriString("https://login.work.weixin.qq.com/wwlogin/sso/login").queryParams(params).toUriString();
+        response.sendRedirect(url);
     }
 
     @Override
