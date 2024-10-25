@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author lanyiping
@@ -48,4 +49,8 @@ public interface WeComService {
     boolean registerStudent(String externalUserId);
 
     JsSdkResponse getJsConfig(String pageUrl);
+
+    Object getLoginUrl(String redirectUri);
+
+    String loginCallBack(String code, String state);
 }

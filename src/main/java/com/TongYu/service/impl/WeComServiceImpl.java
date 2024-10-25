@@ -26,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
@@ -71,12 +72,12 @@ public class WeComServiceImpl implements WeComService {
         Student student = studentService.getById(stuId);
         //上传文件到企业微信
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/wedrive/file_upload?access_token="+ GlobalCache.get("access_token");
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/wedrive/file_upload?access_token=" + GlobalCache.get("access_token");
         JSONObject jsonObject = new JSONObject();
         //文件内容
         jsonObject.put("file_base64_content", Base64.getEncoder().encodeToString(file.getBytes()));
         //学员姓名+文件名后缀
-        jsonObject.put("file_name", student.getStuName()+"."+extension);
+        jsonObject.put("file_name", student.getStuName() + "." + extension);
         //空间ID（固定值）
         jsonObject.put("spaceid", spaceId);
         jsonObject.put("fatherid", fatherId);
@@ -100,8 +101,7 @@ public class WeComServiceImpl implements WeComService {
         params.add("corpid", corpId);
         params.add("corpsecret", corpSecret);
         //定义url参数
-        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken")
-                .queryParams(params).toUriString();
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken").queryParams(params).toUriString();
         RestTemplate restTemplate = new RestTemplate();
         //获取access_token,get请求
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -121,8 +121,7 @@ public class WeComServiceImpl implements WeComService {
         params.add("js_code", jsCode);
         params.add("grant_type", "authorization_code");
         //定义url参数
-        String url = UriComponentsBuilder.fromUriString("https://api.weixin.qq.com/sns/jscode2session")
-                .queryParams(params).toUriString();
+        String url = UriComponentsBuilder.fromUriString("https://api.weixin.qq.com/sns/jscode2session").queryParams(params).toUriString();
         //请求小程序API
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -136,8 +135,7 @@ public class WeComServiceImpl implements WeComService {
         params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
         params.add("external_userid", externalUserId);
         //定义url参数
-        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get")
-                .queryParams(params).toUriString();
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get").queryParams(params).toUriString();
         //请求企业微信API
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -156,8 +154,7 @@ public class WeComServiceImpl implements WeComService {
             log.info("2---POST--企业微信回调参数：{}, 解析参数：{}", jsonString, bodyJson);
             Map<String, String> resultMap = getRequestParameter(request, String.valueOf(bodyJson));
             //事件的类型|添加企业客户事件
-            if (resultMap.get("Event").equals("change_external_contact") &&
-                    resultMap.get("ChangeType").equals("add_external_contact")) {
+            if (resultMap.get("Event").equals("change_external_contact") && resultMap.get("ChangeType").equals("add_external_contact")) {
                 //添加客服，为企微注册用户
                 log.info("2.1-----添加企业客户事件：{}", resultMap.get("ExternalUserID"));
                 boolean externalUserID = registerStudent(resultMap.get("ExternalUserID"));
@@ -171,13 +168,12 @@ public class WeComServiceImpl implements WeComService {
 
     /**
      * 验证回调URL
-     *
      */
     public Object verificationUrl(HttpServletRequest request) throws AesException {
         log.info("===验证URL有效性开始");
         String sEchoStr; //需要返回的明文
         try {
-            WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt( "uxzZ3", encodingAESKey, corpId);
+            WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId);
 
             String msgSignature = request.getParameter("msg_signature");
             String timeStamp = request.getParameter("timestamp");
@@ -194,13 +190,12 @@ public class WeComServiceImpl implements WeComService {
 
     /**
      * 企业微信回调参数解析
-     *
      */
     public Map<String, String> getRequestParameter(HttpServletRequest request, String body) throws AesException {
         log.info("=========参数解析开始=========");
 
         try {
-            WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt( "uxzZ3", encodingAESKey, corpId);
+            WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId);
 
             String msgSignature = request.getParameter("msg_signature");
             String timeStamp = request.getParameter("timestamp");
@@ -221,9 +216,10 @@ public class WeComServiceImpl implements WeComService {
 
     /**
      * 用户注册
-     *  1. 查询企业微信用户
-     *  2. 注册学员信息
-     *  3. 关联学员与企业微信用户的关系 unionId--external_userid
+     * 1. 查询企业微信用户
+     * 2. 注册学员信息
+     * 3. 关联学员与企业微信用户的关系 unionId--external_userid
+     *
      * @param externalUserId 外部联系人ID
      * @return 注册结果
      */
@@ -260,8 +256,7 @@ public class WeComServiceImpl implements WeComService {
         //定义query参数
         params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
         //定义url参数
-        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/ticket/get?type=agent_config")
-                .queryParams(params).toUriString();
+        String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/ticket/get?type=agent_config").queryParams(params).toUriString();
         RestTemplate restTemplate = new RestTemplate();
         //获取access_token,get请求
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -287,6 +282,45 @@ public class WeComServiceImpl implements WeComService {
         jsSdkResponse.setNonceStr(nonceStr);
         jsSdkResponse.setSignature(stringBuilder.toString());
         return jsSdkResponse;
+    }
+
+    @Override
+    public Object getLoginUrl(String redirectURI) {
+        String stateKey = "WWLogin" + RandomString.make(6);
+        GlobalCache.put(stateKey, 1);
+
+        // Step 3: 构造授权请求URL
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(1);
+        //定义query参数
+        params.add("login_type", "CorpApp");
+        params.add("appid", corpId);
+        params.add("agentid", "1000006");
+        params.add("state", stateKey);
+        params.add("redirect_uri", "https://web.goldenguard.top");
+        //定义url参数
+        return UriComponentsBuilder.
+                fromUriString("https://login.work.weixin.qq.com/wwlogin/sso/login").queryParams(params).toUriString();
+    }
+
+    @Override
+    public String loginCallBack(String code, String state) {
+        // 验证state是否匹配
+        if ("1".equals(GlobalCache.get(state))) {
+            // 通过验证，可以继续处理授权结果
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>(1);
+            //定义query参数
+            params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
+            params.add("code", code);
+            String url = UriComponentsBuilder.
+                    fromUriString("https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo").queryParams(params).toUriString();
+            //请求企业微信API
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            return response.getBody();
+        } else {
+            System.out.println("CSRF OR ERROR 检测到攻击或无效状态!");
+        }
+        return null;
     }
 }
 
