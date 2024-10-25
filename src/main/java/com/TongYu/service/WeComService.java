@@ -50,7 +50,6 @@ public interface WeComService {
 
     JsSdkResponse getJsConfig(String pageUrl);
 
-    void getLoginUrl(HttpServletResponse response, String redirectURI);
+    String getUserInfo(String code, String state);
 
-    String loginCallBack(String code, String state);
 }

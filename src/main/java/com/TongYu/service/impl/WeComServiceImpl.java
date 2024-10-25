@@ -284,30 +284,11 @@ public class WeComServiceImpl implements WeComService {
         return jsSdkResponse;
     }
 
-    @SneakyThrows
     @Override
-    public void getLoginUrl(HttpServletResponse response, String redirectURI) {
-        String stateKey = "WWLogin" + RandomString.make(6);
-        GlobalCache.put(stateKey, 1);
-
-        // Step 3: 构造授权请求URL
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(1);
-        //定义query参数
-        params.add("login_type", "CorpApp");
-        params.add("appid", corpId);
-        params.add("agentid", "1000006");
-        params.add("state", stateKey);
-        params.add("redirect_uri", "https://web.goldenguard.top/weCom/loginCallBack");
-        //定义url参数
-        String url = UriComponentsBuilder.
-                fromUriString("https://login.work.weixin.qq.com/wwlogin/sso/login").queryParams(params).toUriString();
-        response.sendRedirect(url);
-    }
-
-    @Override
-    public String loginCallBack(String code, String state) {
+    public String getUserInfo(String code, String state) {
+        log.info("state:{}, code:{}", state, code);
         // 验证state是否匹配
-        if ("1".equals(GlobalCache.get(state))) {
+        if ("GoldenGuard".equals(state)) {
             // 通过验证，可以继续处理授权结果
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>(1);
             //定义query参数

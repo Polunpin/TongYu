@@ -103,27 +103,14 @@ public class WeComController {
         return ApiResponse.ok(weComService.getJsConfig(pageUrl));
     }
 
-    /**
-     * 构造企业微信登录链接
-     * @param redirectUri 登录成功后跳转的链接
-     * @return 企业微信登录链接
-     */
-    @GetMapping(value = "/getLoginUrl")
-    public void getLoginUrl(HttpServletResponse response, String redirectUri) {
-        weComService.getLoginUrl(response,redirectUri);
-    }
-
-    /**
-     * 企业微信扫码登录回调
-     * @return 登录结果
-     */
-    @GetMapping(value = "/loginCallBack")
-    public ApiResponse loginCallBack(String code, String state) {
-        return ApiResponse.ok(weComService.loginCallBack(code, state));
-    }
 
     /**
      * 企业微信获取用户信息
      * @param code 扫码登录返回的code
+     * @return 用户信息
      */
+    @GetMapping(value = "/getUserInfo")
+    public ApiResponse getUserInfo(String code, String state) {
+        return ApiResponse.ok(weComService.getUserInfo(code, state));
+    }
 }
