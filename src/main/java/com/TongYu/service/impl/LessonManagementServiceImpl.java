@@ -134,10 +134,10 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public ApiResponse courseRecordList(CourseRequest courseRequest) {
         List<CourseResponse> courseResponses = new ArrayList<>();
-        if (courseRequest.getWorkUserId() != null && !courseRequest.getWorkUserId().isEmpty()) {
-            log.info("当前查询教练id:{}", courseRequest.getWorkUserId());
-            return ApiResponse.ok(courseResponses);
+        if (courseRequest.getWorkUserId().isEmpty()) {
+            return ApiResponse.error("教练ID不能为空");
         }
+        log.info("当前查询教练id:{}", courseRequest.getWorkUserId());
         // 管理员角色
         Set<String> workUserIds = new HashSet<>(Arrays.asList("LanYiPing01", "tomorrow", "LanYiPing"));
 
