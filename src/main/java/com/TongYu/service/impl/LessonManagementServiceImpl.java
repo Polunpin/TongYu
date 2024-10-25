@@ -160,7 +160,11 @@ public class LessonManagementServiceImpl implements LessonManagementService {
                 courseResponse.setPendingAmount(lessonPrice + "元" + "/" + diffInHours + "小时");
             }
             if (courseRecord.getStudentId() != null) {
-                courseResponse.setExternalUserId(studentService.getById(courseRecord.getStudentId()).getExternalUserId());
+                String externalUserId = studentService.getById(courseRecord.getStudentId()).getExternalUserId();
+                courseResponse.setExternalUserId(externalUserId);
+                JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(externalUserId);
+                courseResponse.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
+                courseResponse.setHeadImgUrl(studentService.getById(courseRecord.getStudentId()).getImage());
             }
             courseResponses.add(courseResponse);
         }

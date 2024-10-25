@@ -17,6 +17,11 @@ public class CourseResponse extends CourseRecord {
     private String studentName;
 
     /**
+     * 学员头像
+     */
+    private String headImgUrl;
+
+    /**
      * 教练姓名
      */
     private String trainerName;
