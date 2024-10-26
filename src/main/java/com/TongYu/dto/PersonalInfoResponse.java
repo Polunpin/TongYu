@@ -42,7 +42,7 @@ public class PersonalInfoResponse {
     private Integer lave;
 
     /**
-     * 已用课时
+     * 已预约课时
      */
     private Integer used;
 

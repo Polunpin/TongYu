@@ -82,7 +82,7 @@ public class Student implements Serializable {
     private Integer lave;
 
     /**
-     * 已用课时
+     * 已预约课时
      */
     private Integer used;
 

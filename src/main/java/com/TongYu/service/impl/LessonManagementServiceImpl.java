@@ -45,8 +45,9 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         // 学员的课时信息
         PersonalInfoResponse personalInfo = new PersonalInfoResponse();
         if (student != null) {
+            log.info("当前查询学生Info:{}", student);
             copyProperties(student, personalInfo);
-            personalInfo.setStuName(student.getStuName()==null?"待约课":student.getStuName());
+            personalInfo.setStuName(student.getStuName() == null ? "待约课" : student.getStuName());
             JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
             personalInfo.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
             personalInfo.setIsAppointment(student.getUsed() > 0);
@@ -69,15 +70,19 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     @Override
     public Boolean reservation(CourseAddRequest courseAddRequest) {
-        //手机号不为空，则更新学生信息
-        if (!courseAddRequest.getTelephone().isEmpty()) {
-            Student student = new Student();
-            student.setId(courseAddRequest.getStudentId());
+        Student student = new Student();
+        if (courseAddRequest.getImageId().isEmpty()){
+            //体验课
             student.setStuName(courseAddRequest.getStuName());
             student.setTelephone(courseAddRequest.getTelephone());
             student.setImage(courseAddRequest.getImageId());
-            studentService.updateById(student);
+        } else {
+            student =studentService.getById(courseAddRequest.getStudentId());
+            //正式课 剩余课时-1；已预约课时+1
+            student.setLave(student.getLave() - 1);
+            student.setUsed(student.getUsed() + 1);
         }
+        studentService.updateById(student);
 
         // TODO 发送服务通知：预约成功通知
         return courseRecordService.save(courseAddRequest);
@@ -146,11 +151,12 @@ public class LessonManagementServiceImpl implements LessonManagementService {
                 courseResponse.setPendingAmount(lessonPrice + "元" + "/" + diffInHours + "小时");
             }
             if (courseRecord.getStudentId() != null) {
-                String externalUserId = studentService.getById(courseRecord.getStudentId()).getExternalUserId();
-                courseResponse.setExternalUserId(externalUserId);
-                JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(externalUserId);
+                log.info("当前查询学生id:{}", courseRecord.getStudentId());
+                Student student = studentService.getById(courseRecord.getStudentId());
+                courseResponse.setExternalUserId(student.getExternalUserId());
+                JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
                 courseResponse.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
-                courseResponse.setHeadImgUrl(studentService.getById(courseRecord.getStudentId()).getImage());
+                courseResponse.setStudentName(student.getStuName());
             }
             courseResponses.add(courseResponse);
         }
@@ -159,6 +165,9 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     @Override
     public Object updateCourseRecord(CourseRecord courseRecord) {
+        //TODO 待完善-预约上课成功通知（上课预约信息、教练信息、学员信息）
+        //TODO 待完善-教练-反馈信息（学员上课反馈、教练评价）
+        //TODO 待完善-学员-上课信息
         return courseRecordService.updateById(courseRecord);
     }
 
@@ -218,6 +227,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         courseRecordQw.orderByDesc("end_time").last("limit 1");
         return courseRecordService.getOne(courseRecordQw);
     }
+    //TODO 待完善-回调 支付成功通知-购买课程通知
 }
 
 
