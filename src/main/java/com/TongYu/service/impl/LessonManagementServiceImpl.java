@@ -74,6 +74,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         if (courseAddRequest.getImageId().isEmpty()){
             //体验课
             student.setStuName(courseAddRequest.getStuName());
+            student.setOpenId(courseAddRequest.getOpenId());
             student.setTelephone(courseAddRequest.getTelephone());
             student.setImage(courseAddRequest.getImageId());
         } else {
