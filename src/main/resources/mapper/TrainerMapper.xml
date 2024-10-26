@@ -5,24 +5,25 @@
 <mapper namespace="com.TongYu.mapper.TrainerMapper">
 
     <resultMap id="BaseResultMap" type="com.TongYu.model.Trainer">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="workUserId" column="work_user_id" jdbcType="VARCHAR"/>
-            <result property="trainerName" column="trainer_name" jdbcType="VARCHAR"/>
-            <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
-            <result property="gender" column="gender" jdbcType="OTHER"/>
-            <result property="trainerPrice" column="trainer_price" jdbcType="VARCHAR"/>
-            <result property="numberplate" column="numberplate" jdbcType="VARCHAR"/>
-            <result property="province" column="province" jdbcType="VARCHAR"/>
-            <result property="city" column="city" jdbcType="VARCHAR"/>
-            <result property="area" column="area" jdbcType="VARCHAR"/>
-            <result property="trainerStatus" column="trainer_status" jdbcType="OTHER"/>
-            <result property="creatTime" column="creat_time" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="workUserId" column="work_user_id" jdbcType="VARCHAR"/>
+        <result property="trainerName" column="trainer_name" jdbcType="VARCHAR"/>
+        <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="OTHER"/>
+        <result property="trainerPrice" column="trainer_price" jdbcType="VARCHAR"/>
+        <result property="numberplate" column="numberplate" jdbcType="VARCHAR"/>
+        <result property="car" column="car" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="area" column="area" jdbcType="VARCHAR"/>
+        <result property="trainerStatus" column="trainer_status" jdbcType="OTHER"/>
+        <result property="creatTime" column="creat_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,work_user_id,trainer_name,
         telephone,gender,trainer_price,
-        numberplate,province,city,
+        numberplate,car,province,city,
         area,trainer_status,creat_time
     </sql>
 </mapper>

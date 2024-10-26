@@ -27,6 +27,11 @@ public class Student implements Serializable {
     private String unionId;
 
     /**
+     * 微信各个主体ID
+     */
+    private String openId;
+
+    /**
      * 外部联系人的userid
      */
     private String externalUserId;
@@ -85,11 +90,6 @@ public class Student implements Serializable {
      * 已预约课时
      */
     private Integer used;
-
-    /**
-     * 咨询日期
-     */
-    private Date consultDate;
 
     /**
      * 意向度

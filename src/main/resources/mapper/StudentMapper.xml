@@ -5,32 +5,32 @@
 <mapper namespace="com.TongYu.mapper.StudentMapper">
 
     <resultMap id="BaseResultMap" type="com.TongYu.model.Student">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="unionId" column="union_Id" jdbcType="VARCHAR"/>
-            <result property="externalUserId" column="external_user_id" jdbcType="VARCHAR"/>
-            <result property="trainerId" column="trainer_Id" jdbcType="BIGINT"/>
-            <result property="stuName" column="stu_name" jdbcType="VARCHAR"/>
-            <result property="gender" column="gender" jdbcType="VARCHAR"/>
-            <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
-            <result property="image" column="image" jdbcType="VARCHAR"/>
-            <result property="addWay" column="add_way" jdbcType="INTEGER"/>
-            <result property="channel" column="channel" jdbcType="VARCHAR"/>
-            <result property="total" column="total" jdbcType="TINYINT"/>
-            <result property="give" column="give" jdbcType="TINYINT"/>
-            <result property="lave" column="lave" jdbcType="TINYINT"/>
-            <result property="used" column="used" jdbcType="TINYINT"/>
-            <result property="consultDate" column="consult_date" jdbcType="DATE"/>
-            <result property="intention" column="intention" jdbcType="TINYINT"/>
-            <result property="analysis" column="analysis" jdbcType="VARCHAR"/>
-            <result property="stage" column="stage" jdbcType="VARCHAR"/>
-            <result property="creatTime" column="creat_time" jdbcType="DATE"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="unionId" column="union_id" jdbcType="VARCHAR"/>
+        <result property="openId" column="open_id" jdbcType="VARCHAR"/>
+        <result property="externalUserId" column="external_user_id" jdbcType="VARCHAR"/>
+        <result property="trainerId" column="trainer_id" jdbcType="BIGINT"/>
+        <result property="stuName" column="stu_name" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+        <result property="image" column="image" jdbcType="VARCHAR"/>
+        <result property="addWay" column="add_way" jdbcType="INTEGER"/>
+        <result property="channel" column="channel" jdbcType="VARCHAR"/>
+        <result property="total" column="total" jdbcType="TINYINT"/>
+        <result property="give" column="give" jdbcType="TINYINT"/>
+        <result property="lave" column="lave" jdbcType="TINYINT"/>
+        <result property="used" column="used" jdbcType="TINYINT"/>
+        <result property="intention" column="intention" jdbcType="TINYINT"/>
+        <result property="analysis" column="analysis" jdbcType="VARCHAR"/>
+        <result property="stage" column="stage" jdbcType="VARCHAR"/>
+        <result property="creatTime" column="creat_time" jdbcType="DATE"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,union_Id,external_user_id,trainer_Id,
+        id,union_Id,external_user_id,open_id,trainer_Id,
         stu_name,gender,telephone,add_way,
         channel,total,give,
-        lave,used,consult_date,
+        lave,used,
         intention,analysis,stage,
         creat_time
     </sql>
