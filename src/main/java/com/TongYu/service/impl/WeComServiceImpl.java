@@ -7,7 +7,6 @@ import com.TongYu.dto.JsSdkResponse;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
-import com.TongYu.util.ConstantUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -25,14 +24,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.net.URI;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
 
 /**
  * @author lanyiping
@@ -147,11 +147,17 @@ public class WeComServiceImpl implements WeComService {
             return verificationUrl(request);
         } else {//post
             log.info("2---POST--企业微信回调参数：{}", jsonString);
-            Map<String, String> resultMap = getRequestParameter(request, String.valueOf(XML.toJSONObject(body).getJSONObject("xml")));
+            org.json.JSONObject resultJson = getRequestParameter(request, String.valueOf(XML.toJSONObject(body).getJSONObject("xml")));
             //事件类型
-            if (resultMap.get("Event").equals("change_external_contact") && resultMap.get("ChangeType").equals("add_external_contact")) {
+            if (resultJson.get("Event").equals("change_external_contact") && resultJson.get("ChangeType").equals("add_external_contact")) {
                 //添加企业客户事件-注册学员信息
-                return registerStudent(resultMap.get("ExternalUserID"));
+                return registerStudent(resultJson.getString("ExternalUserID"));
+            }
+            //支付和退款回调时这个值均为：encrypt-resource
+            if (resultJson.get("resource_type").equals("encrypt-resource")) {
+                log.info("3---POST--支付退款回调信息：{}", resultJson.getString("encrypt"));
+                //更新学员信息
+//                return updateStudentInfoByPayNotify(String.valueOf(resultJson));
             }
         }
         return null;
@@ -183,16 +189,13 @@ public class WeComServiceImpl implements WeComService {
     /**
      * 企业微信回调参数解析
      */
-    public Map<String, String> getRequestParameter(HttpServletRequest request, String body) throws AesException {
+    public org.json.JSONObject getRequestParameter(HttpServletRequest request, String body) throws AesException {
         try {
             String sMsg = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId).DecryptMsg(
                     request.getParameter("msg_signature"),
                     request.getParameter("timestamp"),
                     request.getParameter("nonce"), body);
-            Map<String, String> resultMap = new HashMap<>(16);
-            //将xml转换为Map
-            ConstantUtil.parseXmlToMap(sMsg, resultMap);
-            return resultMap;
+            return XML.toJSONObject(sMsg);
         } catch (AesException e) {
             log.error("密文参数解析失败，错误原因请查看异常:{}", e.getMessage());
             throw new AesException(e.getCode());
@@ -285,6 +288,54 @@ public class WeComServiceImpl implements WeComService {
             log.error("CSRF OR ERROR 检测到攻击或无效状态!");
         }
         return null;
+    }
+
+    @SneakyThrows
+    @Override
+    public Object updateStudentInfoByPayNotify(String body) {
+        JSONObject jsonObject = new JSONObject(Boolean.parseBoolean(body));
+
+        // 1. 获取callback_aeskey（Base64编码的AES密钥）
+        String callbackAesKey = "你的callback_aeskey"; // 替换为你的AES密钥
+        byte[] aesKey = Base64.getDecoder().decode(callbackAesKey);
+
+        // 2. 获取nonce和associated_data
+        byte[] nonce = "随机生成的nonce".getBytes(); // 替换为实际生成的nonce
+        byte[] associatedData = "associated_data".getBytes(); // 替换为实际的associated_data
+
+        // 3. 进行Base64解码
+        String base64Ciphertext = "资源中的ciphertext"; // 替换为你的Base64编码的密文
+        byte[] ciphertext = Base64.getDecoder().decode(base64Ciphertext);
+
+        // 4. 使用AES密钥、nonce和associated_data进行解密
+        String decryptedData = decrypt(aesKey, nonce, associatedData, ciphertext);
+        System.out.println("解密后的数据: " + decryptedData);
+
+        jsonObject.getJSONObject("resource").getJSONObject("ciphertext");
+        //支付成功事件
+        if ("TRANSACTION.SUCCESS".equals(jsonObject.getString("event_type"))) {
+            jsonObject.getJSONObject("resource").getJSONObject("payment").getString("transaction_id");
+            //根据transaction_id更新学员购买课时
+        }
+        //支付失败事件
+        if ("REFUND.SUCCESS".equals(jsonObject.getString("event_type"))) {
+
+        }
+        //根据支付信息更新学员购买课时
+
+        return null;
+    }
+
+    private static String decrypt(byte[] key, byte[] nonce, byte[] associatedData, byte[] ciphertext) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(16 * 8, nonce); // 128-bit tag
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, gcmParameterSpec);
+        cipher.updateAAD(associatedData); // 添加附加数据
+
+        byte[] decryptedBytes = cipher.doFinal(ciphertext);
+        return new String(decryptedBytes); // 返回解密后的字符串
     }
 }
 

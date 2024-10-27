@@ -93,31 +93,45 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     public Object feedback(String studentId) {
         List<CourseResponse> courseRecords = new ArrayList<>();
         List<CourseRecord> courseRecordList = courseRecordService.list(new QueryWrapper<CourseRecord>().eq("student_id", studentId));
+
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         for (CourseRecord courseRecord : courseRecordList) {
             CourseResponse courseResponse = new CourseResponse();
             copyProperties(courseRecord, courseResponse);
-            if (courseRecord.getTrainerId() != null) {
-                Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
-                courseResponse.setTrainerName(trainer.getTrainerName().isEmpty() ? "待分派教练" : trainer.getTrainerName());
-                // 教练头像 TODO 待完善
-                courseResponse.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
-            }
-            //预约日期
-            LocalDateTime startDateTime = courseRecord.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            // 设置教练信息
+            setTrainerInfo(courseRecord, courseResponse);
+            // 设置预约日期
+            LocalDateTime startDateTime = convertToLocalDateTime(courseRecord.getStartTime());
             courseResponse.setAppointmentDateByMonth(startDateTime.getMonthValue());
             courseResponse.setAppointmentDateByDay(startDateTime.getDayOfMonth());
-            //预约时间
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            // 格式化开始时间和结束时间-预约时间
-            String formattedStartTime = outputFormat.format(courseRecord.getStartTime());
-            String formattedEndTime = outputFormat.format(courseRecord.getEndTime());
-            // 拼接最终的格式-预约时间
-            String appointmentTime = formattedStartTime + "-" + formattedEndTime.split(" ")[1];
+            // 设置预约时间
+            String appointmentTime = formatAppointmentTime(courseRecord, outputFormat);
             courseResponse.setAppointmentTime(appointmentTime);
             courseRecords.add(courseResponse);
         }
         return courseRecords;
     }
+
+    private void setTrainerInfo(CourseRecord courseRecord, CourseResponse courseResponse) {
+        if (courseRecord.getTrainerId() != null) {
+            Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
+            String trainerName = (trainer != null && !trainer.getTrainerName().isEmpty()) ? trainer.getTrainerName() : "待分派教练";
+            courseResponse.setTrainerName(trainerName);
+            // 教练头像 TODO 待完善
+            courseResponse.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
+        }
+    }
+
+    private LocalDateTime convertToLocalDateTime(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private String formatAppointmentTime(CourseRecord courseRecord, SimpleDateFormat outputFormat) {
+        String formattedStartTime = outputFormat.format(courseRecord.getStartTime());
+        String formattedEndTime = outputFormat.format(courseRecord.getEndTime());
+        return formattedStartTime + "-" + formattedEndTime.split(" ")[1];
+    }
+
 
     @Override
     public ApiResponse courseRecordList(CourseRequest courseRequest) {

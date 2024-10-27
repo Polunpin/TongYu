@@ -78,6 +78,17 @@ public class WeComController {
         return ApiResponse.ok(weComService.registerStudent(externalUserId));
     }
 
+    /**
+     * 根据支付回调通知更新学员信息
+     *
+     * @param body 通知数据
+     * @return 响应结果
+     */
+    @PostMapping(value = "/updateStudentInfoByPayNotify")
+    public ApiResponse updateStudentInfoByPayNotify(@RequestBody String body) {
+        return ApiResponse.ok(weComService.updateStudentInfoByPayNotify(body));
+    }
+
 
     /**
      * 企业微信回调
@@ -105,6 +116,7 @@ public class WeComController {
 
     /**
      * 企业微信获取用户信息
+     *
      * @param code 扫码登录返回的code
      * @return 用户信息
      */

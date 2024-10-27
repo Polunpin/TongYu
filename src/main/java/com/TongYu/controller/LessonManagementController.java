@@ -28,7 +28,6 @@ public class LessonManagementController {
 
     /**
      * 小程序首页-个人信息
-     *
      * @return ApiResponse
      */
     @GetMapping("/personalInfo")
@@ -70,6 +69,8 @@ public class LessonManagementController {
 
     /**
      * 更新课单信息
+     * @param courseRecord 课程记录信息
+     * @return ApiResponse
      */
     @PostMapping("/updateCourseRecord")
     public ApiResponse updateCourseRecord(@RequestBody CourseRecord courseRecord) {
