@@ -326,6 +326,20 @@ public class WeComServiceImpl implements WeComService {
         return null;
     }
 
+    @Override
+    public Object getPayNotify(HttpServletRequest request) {
+        // 解析请求参数
+        String msgSignature = request.getParameter("msg_signature");
+        String timestamp = request.getParameter("timestamp");
+        String nonce = request.getParameter("nonce");
+
+        // 打印参数以便调试
+        System.out.println("msg_signature: " + msgSignature);
+        System.out.println("timestamp: " + timestamp);
+        System.out.println("nonce: " + nonce);
+        return null;
+    }
+
     private static String decrypt(byte[] key, byte[] nonce, byte[] associatedData, byte[] ciphertext) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");

@@ -53,4 +53,6 @@ public interface WeComService {
     String getUserInfo(String code, String state);
 
     Object updateStudentInfoByPayNotify(String body);
+
+    Object getPayNotify(HttpServletRequest request);
 }

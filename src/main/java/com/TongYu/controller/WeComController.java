@@ -102,6 +102,14 @@ public class WeComController {
         return weComService.getCallBack(request, body);
     }
 
+    /**
+     * 支付回调通知
+     */
+    @GetMapping
+    public Object getPayNotify(HttpServletRequest request) {
+        return weComService.getPayNotify(request);
+    }
+
 
     /**
      * 通过config接口注入权限验证配置
