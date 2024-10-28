@@ -71,7 +71,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public Boolean reservation(CourseAddRequest courseAddRequest) {
         Student student = new Student();
-        if (courseAddRequest.getImageId().isEmpty()){
+        if (courseAddRequest.getImageId() == null || "".equals(courseAddRequest.getImageId())) {
             //体验课
             student.setStuName(courseAddRequest.getStuName());
             student.setOpenId(courseAddRequest.getOpenId());

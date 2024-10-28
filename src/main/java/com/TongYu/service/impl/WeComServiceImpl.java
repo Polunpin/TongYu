@@ -9,6 +9,7 @@ import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
 import com.TongYu.util.ConstantUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.SneakyThrows;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -70,7 +72,6 @@ public class WeComServiceImpl implements WeComService {
         //获取学员信息,用于文件名标注学员姓名
         Student student = studentService.getById(stuId);
         //上传文件到企业微信
-        RestTemplate restTemplate = new RestTemplate();
         String url = "https://qyapi.weixin.qq.com/cgi-bin/wedrive/file_upload?access_token=" + GlobalCache.get("access_token");
         JSONObject jsonObject = new JSONObject();
         //文件内容
@@ -81,7 +82,7 @@ public class WeComServiceImpl implements WeComService {
         jsonObject.put("spaceid", spaceId);
         jsonObject.put("fatherid", fatherId);
         //POST请求
-        ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject, String.class);
+        ResponseEntity<String> response = new RestTemplate().postForEntity(url, jsonObject, String.class);
         JSONObject object = JSONObject.parseObject(response.getBody());
         if (object.getIntValue("errcode") == 0) {
             return object.getString("fileid");
@@ -101,9 +102,8 @@ public class WeComServiceImpl implements WeComService {
         params.add("corpsecret", corpSecret);
         //定义url参数
         String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken").queryParams(params).toUriString();
-        RestTemplate restTemplate = new RestTemplate();
         //获取access_token,get请求
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        ResponseEntity<String> response = new RestTemplate().getForEntity(url, String.class);
         // 将响应体转换为 JSONObject
         JSONObject object = JSONObject.parseObject(response.getBody());
         // 缓存access_token
@@ -122,8 +122,7 @@ public class WeComServiceImpl implements WeComService {
         //定义url参数
         String url = UriComponentsBuilder.fromUriString("https://api.weixin.qq.com/sns/jscode2session").queryParams(params).toUriString();
         //请求小程序API
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        ResponseEntity<String> response = new RestTemplate().getForEntity(url, String.class);
         return response.getBody();
     }
 
@@ -186,10 +185,7 @@ public class WeComServiceImpl implements WeComService {
      */
     public Map<String, String> getRequestParameter(HttpServletRequest request, String body) throws AesException {
         try {
-            String sMsg = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId).DecryptMsg(
-                    request.getParameter("msg_signature"),
-                    request.getParameter("timestamp"),
-                    request.getParameter("nonce"), body);
+            String sMsg = new WXBizJsonMsgCrypt("uxzZ3", encodingAESKey, corpId).DecryptMsg(request.getParameter("msg_signature"), request.getParameter("timestamp"), request.getParameter("nonce"), body);
             Map<String, String> resultMap = new HashMap<>(16);
             //将xml转换为Map
             ConstantUtil.parseXmlToMap(sMsg, resultMap);
@@ -276,11 +272,9 @@ public class WeComServiceImpl implements WeComService {
             //定义query参数
             params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
             params.add("code", code);
-            String url = UriComponentsBuilder.
-                    fromUriString("https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo").queryParams(params).toUriString();
+            String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo").queryParams(params).toUriString();
             //请求企业微信API
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            ResponseEntity<String> response = new RestTemplate().getForEntity(url, String.class);
             return response.getBody();
         } else {
             log.error("CSRF OR ERROR 检测到攻击或无效状态!");
@@ -290,25 +284,39 @@ public class WeComServiceImpl implements WeComService {
 
     @Override
     public Object createCalendar(String info) {
-//        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/calendar/add?access_token=" + GlobalCache.get("access_token");
-//        JSONObject jsonObject = new JSONObject();
-//        //文件内容
-//        jsonObject.put("file_base64_content", Base64.getEncoder().encodeToString(file.getBytes()));
-//        //学员姓名+文件名后缀
-//        jsonObject.put("file_name", student.getStuName() + "." + extension);
-//        //空间ID（固定值）
-//        jsonObject.put("spaceid", spaceId);
-//        jsonObject.put("fatherid", fatherId);
-//        //POST请求
-//        ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject, String.class);
-//        JSONObject object = JSONObject.parseObject(response.getBody());
-//        if (object.getIntValue("errcode") == 0) {
-//            return object.getString("fileid");
-//        } else {
-//            log.info("上传文件到企业微信失败！返回结果：{}", response.getBody());
-//        }
-//        return response.getBody();
-        return null;
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/calendar/add?access_token=" + GlobalCache.get("access_token");
+
+        JSONObject jsonObject = new JSONObject();
+
+        // 设置日程的基本信息
+        JSONObject schedule = new JSONObject();
+        schedule.put("start_time", System.currentTimeMillis()); // 开始时间
+        schedule.put("end_time", System.currentTimeMillis()+3600000);   // 结束时间
+        schedule.put("is_whole_day", 1);        // 是否全天活动
+
+        // 设置与会人员
+        JSONArray attendees = new JSONArray();
+        attendees.add(new JSONObject().fluentPut("userid", "LanYiPing01"));
+        schedule.put("attendees", attendees); // 添加与会人员
+
+        schedule.put("summary", "李鑫鑫"); // 日程摘要
+        schedule.put("description", "待上课"); // 描述
+        schedule.put("location", "广通小区"); // 位置
+
+        // 设置提醒信息
+        JSONObject reminders = new JSONObject();
+        reminders.put("is_remind", 1); // 是否提醒
+        reminders.put("is_repeat", 0);  // 是否重复
+        reminders.put("remind_before_event_secs", 3600); // 提前提醒时间（秒）
+        schedule.put("reminders", reminders); // 添加提醒信息
+
+        // 将日程信息放入 JSON 对象
+        jsonObject.put("schedule", schedule);
+
+
+        //POST请求
+        ResponseEntity<String> response = new RestTemplate().postForEntity(url, jsonObject, String.class);
+        return response.getBody();
     }
 }
 
