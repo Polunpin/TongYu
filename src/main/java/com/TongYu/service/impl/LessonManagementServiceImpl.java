@@ -245,6 +245,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         //学员信息
         courseAddRequest.setStuName(student.getStuName());
         courseAddRequest.setTelephone(student.getTelephone());
+        courseAddRequest.setTrainerName(trainerService.getById(student.getTrainerId()).getTrainerName());
         //课时信息
         copyProperties(courseRecord, courseAddRequest);
         return courseAddRequest;

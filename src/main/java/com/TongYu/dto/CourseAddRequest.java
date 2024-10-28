@@ -15,6 +15,12 @@ public class CourseAddRequest extends CourseRecord {
      * 学员姓名
      */
     private String stuName;
+
+    /**
+     * 教练姓名
+     */
+    private String trainerName;
+
     /**
      * 微信各个主体ID
      */
