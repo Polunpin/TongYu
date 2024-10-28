@@ -8,6 +8,7 @@ import com.TongYu.model.Trainer;
 import com.TongYu.service.*;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,7 +72,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public Boolean reservation(CourseAddRequest courseAddRequest) {
         Student student = new Student();
-        if (courseAddRequest.getImageId() == null || "".equals(courseAddRequest.getImageId())) {
+        if (StringUtils.isBlank(courseAddRequest.getImageId())) {
             //体验课
             student.setStuName(courseAddRequest.getStuName());
             student.setOpenId(courseAddRequest.getOpenId());
@@ -116,7 +117,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     private void setTrainerInfo(CourseRecord courseRecord, CourseResponse courseResponse) {
         if (courseRecord.getTrainerId() != null) {
             Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
-            String trainerName = (trainer != null && !trainer.getTrainerName().isEmpty()) ? trainer.getTrainerName() : "待分派教练";
+            String trainerName = StringUtils.isNotEmpty(trainer.getTrainerName()) ? "待分派教练" : trainer.getTrainerName();
             courseResponse.setTrainerName(trainerName);
             // 教练头像 TODO 待完善
             courseResponse.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
@@ -136,7 +137,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public ApiResponse courseRecordList(CourseRequest courseRequest) {
         List<CourseResponse> courseResponses = new ArrayList<>();
-        if (courseRequest.getWorkUserId().isEmpty()) {
+        if (StringUtils.isBlank(courseRequest.getWorkUserId())) {
             return ApiResponse.error("教练ID不能为空");
         }
         log.info("当前查询教练id:{}", courseRequest.getWorkUserId());
@@ -201,7 +202,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             studentQw.eq("trainer_id", trainerId);
         }
 
-        if (studentName != null && !studentName.isEmpty()) {
+        if (StringUtils.isNotBlank(studentName)) {
             studentQw.like("stu_name", studentName);
         }
 
