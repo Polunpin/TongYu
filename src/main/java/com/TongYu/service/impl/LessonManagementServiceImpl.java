@@ -88,6 +88,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         }
         studentService.updateById(student);
         // TODO 待完善-发送服务通知：预约成功通知
+        // 发送预约通知-教练
+        courseAddRequest.setScheduleId(weComService.createCalendar(JSONObject.toJSONString(courseAddRequest)));
         return courseRecordService.save(courseAddRequest);
     }
 

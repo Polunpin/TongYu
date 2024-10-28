@@ -19,6 +19,7 @@
         <result property="state" column="state" jdbcType="OTHER"/>
         <result property="studentId" column="student_id" jdbcType="BIGINT"/>
         <result property="trainerId" column="trainer_id" jdbcType="BIGINT"/>
+        <result property="scheduleId" column="schedule_id" jdbcType="VARCHAR"/>
         <result property="creatTime" column="creat_time" jdbcType="DATE"/>
     </resultMap>
 

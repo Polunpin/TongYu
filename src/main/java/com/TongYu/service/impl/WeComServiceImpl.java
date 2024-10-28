@@ -6,6 +6,7 @@ import com.TongYu.config.GlobalCache;
 import com.TongYu.dto.JsSdkResponse;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
+import com.TongYu.service.TrainerService;
 import com.TongYu.service.WeComService;
 import com.TongYu.util.ConstantUtil;
 import com.alibaba.fastjson.JSON;
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ public class WeComServiceImpl implements WeComService {
     private String encodingAESKey;
     @Resource
     public StudentService studentService;
+    @Resource
+    public TrainerService trainerService;
 
 
     @Override
@@ -104,9 +107,9 @@ public class WeComServiceImpl implements WeComService {
         String url = UriComponentsBuilder.fromUriString("https://qyapi.weixin.qq.com/cgi-bin/gettoken").queryParams(params).toUriString();
         //获取access_token,get请求
         ResponseEntity<String> response = new RestTemplate().getForEntity(url, String.class);
-        // 将响应体转换为 JSONObject
+        //将响应体转换为 JSONObject
         JSONObject object = JSONObject.parseObject(response.getBody());
-        // 缓存access_token
+        //缓存access_token
         GlobalCache.put("access_token", object.get("access_token"));
         log.info("更新AccessToken成功，有效期{}秒；access_token：{}", object.get("expires_in"), object.get("access_token"));
     }
@@ -238,7 +241,7 @@ public class WeComServiceImpl implements WeComService {
         RestTemplate restTemplate = new RestTemplate();
         //获取access_token,get请求
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        // 将响应体转换为 JSONObject
+        //将响应体转换为 JSONObject
         JSONObject jsonObject = JSONObject.parseObject(response.getBody());
         String ticket = jsonObject.getString("ticket");
 
@@ -265,9 +268,9 @@ public class WeComServiceImpl implements WeComService {
     @Override
     public String getUserInfo(String code, String state) {
         log.info("state:{}, code:{}", state, code);
-        // 验证state是否匹配
+        //验证state是否匹配
         if ("GoldenGuard".equals(state)) {
-            // 通过验证，可以继续处理授权结果
+            //通过验证，可以继续处理授权结果
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>(1);
             //定义query参数
             params.add("access_token", String.valueOf(GlobalCache.get("access_token")));
@@ -283,39 +286,46 @@ public class WeComServiceImpl implements WeComService {
     }
 
     @Override
-    public Object createCalendar(String info) {
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/calendar/add?access_token=" + GlobalCache.get("access_token");
-
+    public String createCalendar(String info) {
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/schedule/add?access_token=" + GlobalCache.get("access_token");
+        //解析日程信息
+        JSONObject infoJson = JSONObject.parseObject(info);
+        //创建 JSON 对象
         JSONObject jsonObject = new JSONObject();
-
-        // 设置日程的基本信息
+        //设置日程的基本信息
         JSONObject schedule = new JSONObject();
-        schedule.put("start_time", System.currentTimeMillis()); // 开始时间
-        schedule.put("end_time", System.currentTimeMillis()+3600000);   // 结束时间
-        schedule.put("is_whole_day", 1);        // 是否全天活动
+        //开始时间 Time 为 Unix 时间戳
+        schedule.put("start_time", Instant.parse(infoJson.getString("startTime")).getEpochSecond());
+        //结束时间
+        schedule.put("end_time", Instant.parse(infoJson.getString("endTime")).getEpochSecond());
 
-        // 设置与会人员
+        //设置与会人员(教练)
         JSONArray attendees = new JSONArray();
-        attendees.add(new JSONObject().fluentPut("userid", "LanYiPing01"));
-        schedule.put("attendees", attendees); // 添加与会人员
+        attendees.add(new JSONObject().fluentPut("userid",
+                trainerService.getById(infoJson.getString("trainerId")).getWorkUserId()));
+        schedule.put("attendees", attendees);
 
-        schedule.put("summary", "李鑫鑫"); // 日程摘要
-        schedule.put("description", "待上课"); // 描述
-        schedule.put("location", "广通小区"); // 位置
+        schedule.put("summary", infoJson.getString("stuName")); //学员 姓名
+        schedule.put("description", "[课时表](https://web.goldenguard.top)"); //描述
+        schedule.put("location", infoJson.getString("address")); //位置
 
-        // 设置提醒信息
+        //设置提醒信息[固定值]
         JSONObject reminders = new JSONObject();
-        reminders.put("is_remind", 1); // 是否提醒
-        reminders.put("is_repeat", 0);  // 是否重复
-        reminders.put("remind_before_event_secs", 3600); // 提前提醒时间（秒）
-        schedule.put("reminders", reminders); // 添加提醒信息
+        reminders.put("is_remind", 1); //是否提醒
+        reminders.put("remind_before_event_secs", 3600); //提前提醒时间（秒）
+        schedule.put("reminders", reminders); //添加提醒信息
 
-        // 将日程信息放入 JSON 对象
+        //将日程信息放入 JSON 对象
         jsonObject.put("schedule", schedule);
-
-
         //POST请求
         ResponseEntity<String> response = new RestTemplate().postForEntity(url, jsonObject, String.class);
+        JSONObject object = JSONObject.parseObject(response.getBody());
+
+        if (object.getIntValue("errcode") == 0) {
+            return object.getString("schedule_id");
+        } else {
+            log.info("创建日程失败！返回结果：{}", response.getBody());
+        }
         return response.getBody();
     }
 }

@@ -51,5 +51,5 @@ public interface WeComService {
 
     String getUserInfo(String code, String state);
 
-    Object createCalendar(String info);
+    String createCalendar(String info);
 }

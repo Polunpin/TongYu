@@ -101,6 +101,7 @@ public class LessonManagementController {
      * 学员课时统计
      *
      * @param workUserId 教练ID
+     * @param studentName 学员姓名
      * @return ApiResponse
      */
     @GetMapping("/studentCourseCount")

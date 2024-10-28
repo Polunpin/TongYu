@@ -114,9 +114,10 @@ public class WeComController {
 
     /**
      * 创建日历（学员预约同步教练日历）
+     * @param info 学员姓名、预约时间、预约地点；提前一小时自动提醒
      */
     @PostMapping(value = "/createCalendar")
-    public ApiResponse createCalendar(String info) {
+    public ApiResponse createCalendar(@RequestBody String info) {
         return ApiResponse.ok(weComService.createCalendar(info));
     }
 
