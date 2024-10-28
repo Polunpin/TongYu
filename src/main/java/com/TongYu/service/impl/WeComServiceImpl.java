@@ -150,6 +150,7 @@ public class WeComServiceImpl implements WeComService {
             Map<String, String> resultMap = getRequestParameter(request, String.valueOf(XML.toJSONObject(body).getJSONObject("xml")));
             //事件类型
             if (resultMap.get("Event").equals("change_external_contact") && resultMap.get("ChangeType").equals("add_external_contact")) {
+                log.info("添加企业客户事件-注册学员信息:{}", resultMap.get("ExternalUserID"));
                 //添加企业客户事件-注册学员信息
                 return registerStudent(resultMap.get("ExternalUserID"));
             }
