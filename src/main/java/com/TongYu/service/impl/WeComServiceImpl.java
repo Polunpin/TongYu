@@ -26,13 +26,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.net.URI;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lanyiping
@@ -285,6 +285,29 @@ public class WeComServiceImpl implements WeComService {
         } else {
             log.error("CSRF OR ERROR 检测到攻击或无效状态!");
         }
+        return null;
+    }
+
+    @Override
+    public Object createCalendar(String info) {
+//        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/calendar/add?access_token=" + GlobalCache.get("access_token");
+//        JSONObject jsonObject = new JSONObject();
+//        //文件内容
+//        jsonObject.put("file_base64_content", Base64.getEncoder().encodeToString(file.getBytes()));
+//        //学员姓名+文件名后缀
+//        jsonObject.put("file_name", student.getStuName() + "." + extension);
+//        //空间ID（固定值）
+//        jsonObject.put("spaceid", spaceId);
+//        jsonObject.put("fatherid", fatherId);
+//        //POST请求
+//        ResponseEntity<String> response = restTemplate.postForEntity(url, jsonObject, String.class);
+//        JSONObject object = JSONObject.parseObject(response.getBody());
+//        if (object.getIntValue("errcode") == 0) {
+//            return object.getString("fileid");
+//        } else {
+//            log.info("上传文件到企业微信失败！返回结果：{}", response.getBody());
+//        }
+//        return response.getBody();
         return null;
     }
 }

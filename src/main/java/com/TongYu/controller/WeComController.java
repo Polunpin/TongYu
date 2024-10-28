@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * 企微相关接口
@@ -112,4 +111,14 @@ public class WeComController {
     public ApiResponse getUserInfo(String code, String state) {
         return ApiResponse.ok(weComService.getUserInfo(code, state));
     }
+
+    /**
+     * 创建日历（学员预约同步教练日历）
+     */
+    @PostMapping(value = "/createCalendar")
+    public ApiResponse createCalendar(String info) {
+        return ApiResponse.ok(weComService.createCalendar(info));
+    }
+
+
 }

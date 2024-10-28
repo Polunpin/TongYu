@@ -49,12 +49,12 @@ public class LessonManagementController {
 
     /**
      * 查询学员的课单信息
-     * @param externalUserId 学员ID（微信标识）
+     * @param studentId 学员ID
      * @return ApiResponse
      */
-    @GetMapping("/getReservationByExternalUserId")
-    public ApiResponse getReservationByExternalUserId(String externalUserId) {
-        return ApiResponse.ok(lessonManagementService.getReservationByExternalUserId(externalUserId));
+    @GetMapping("/getReservationByStudentId")
+    public ApiResponse getReservationByStudentId(String studentId) {
+        return ApiResponse.ok(lessonManagementService.getReservationByStudentId(studentId));
     }
 
     /**
@@ -77,7 +77,7 @@ public class LessonManagementController {
     }
 
     /**
-     * 根据学员ID查询课后反馈信息
+     * 根据学员ID查询课后反馈信息（小程序-记录）
      * @return CourseResponse 课后反馈信息
      */
     @GetMapping("/feedback")

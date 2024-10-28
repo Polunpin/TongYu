@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author lanyiping
@@ -52,4 +51,5 @@ public interface WeComService {
 
     String getUserInfo(String code, String state);
 
+    Object createCalendar(String info);
 }

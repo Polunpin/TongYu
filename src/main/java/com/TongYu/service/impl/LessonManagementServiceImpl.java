@@ -235,19 +235,20 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     }
 
     @Override
-    public Object getReservationByExternalUserId(String externalUserId) {
-        Student student = studentService.getOne(new QueryWrapper<Student>().eq("external_user_id", externalUserId));
+    public Object getReservationByStudentId(String studentId) {
+        CourseAddRequest courseAddRequest = new CourseAddRequest();
+        //课时信息
         QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
-        courseRecordQw.eq("student_id", student.getId());
+        courseRecordQw.eq("student_id", studentId);
         courseRecordQw.orderByDesc("end_time").last("limit 1");
         CourseRecord courseRecord = courseRecordService.getOne(courseRecordQw);
-        CourseAddRequest courseAddRequest = new CourseAddRequest();
+        copyProperties(courseRecord, courseAddRequest);
         //学员信息
+        Student student = studentService.getById(studentId);
         courseAddRequest.setStuName(student.getStuName());
         courseAddRequest.setTelephone(student.getTelephone());
         courseAddRequest.setTrainerName(trainerService.getById(student.getTrainerId()).getTrainerName());
-        //课时信息
-        copyProperties(courseRecord, courseAddRequest);
+
         return courseAddRequest;
     }
     //TODO 待完善-回调 支付成功通知-购买课程通知

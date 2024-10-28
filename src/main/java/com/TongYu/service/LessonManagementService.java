@@ -45,5 +45,5 @@ public interface LessonManagementService {
 
     Object addCourseRecord(CourseAddRequest courseAddRequest);
 
-    Object getReservationByExternalUserId(String externalUserId);
+    Object getReservationByStudentId(String studentId);
 }
