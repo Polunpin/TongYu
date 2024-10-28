@@ -26,13 +26,13 @@ public class CourseRecord implements Serializable {
     /**
      * 预约时间-开始
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date startTime;
 
     /**
      * 预约时间-结束
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date endTime;
 
     /**
