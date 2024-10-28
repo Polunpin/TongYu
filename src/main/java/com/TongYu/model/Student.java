@@ -82,7 +82,7 @@ public class Student implements Serializable {
     private Integer give;
 
     /**
-     * 剩余课时
+     * 剩余课时（默认总课时）
      */
     private Integer lave;
 

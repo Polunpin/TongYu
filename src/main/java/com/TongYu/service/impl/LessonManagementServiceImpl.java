@@ -77,15 +77,16 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             student.setOpenId(courseAddRequest.getOpenId());
             student.setTelephone(courseAddRequest.getTelephone());
             student.setImage(courseAddRequest.getImageId());
+            student.setUsed(courseAddRequest.getDuration());
         } else {
+            //TODO 待完善-购买课时未同步到学生表
             student =studentService.getById(courseAddRequest.getStudentId());
-            //正式课 剩余课时-1；已预约课时+1
-            student.setLave(student.getLave() - 1);
-            student.setUsed(student.getUsed() + 1);
+            //正式课
+            student.setLave(student.getLave() - courseAddRequest.getDuration());
+            student.setUsed(student.getUsed() + courseAddRequest.getDuration());
         }
         studentService.updateById(student);
-
-        // TODO 发送服务通知：预约成功通知
+        // TODO 待完善-发送服务通知：预约成功通知
         return courseRecordService.save(courseAddRequest);
     }
 
@@ -239,7 +240,14 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         QueryWrapper<CourseRecord> courseRecordQw = new QueryWrapper<>();
         courseRecordQw.eq("student_id", student.getId());
         courseRecordQw.orderByDesc("end_time").last("limit 1");
-        return courseRecordService.getOne(courseRecordQw);
+        CourseRecord courseRecord = courseRecordService.getOne(courseRecordQw);
+        CourseAddRequest courseAddRequest = new CourseAddRequest();
+        //学员信息
+        courseAddRequest.setStuName(student.getStuName());
+        courseAddRequest.setTelephone(student.getTelephone());
+        //课时信息
+        copyProperties(courseRecord, courseAddRequest);
+        return courseAddRequest;
     }
     //TODO 待完善-回调 支付成功通知-购买课程通知
 }

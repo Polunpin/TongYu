@@ -30,4 +30,8 @@ public class CourseAddRequest extends CourseRecord {
      */
     private String imageId;
 
+    /**
+     * 预约时长
+     */
+    private Integer duration;
 }
