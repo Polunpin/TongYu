@@ -148,8 +148,8 @@ public class WeComServiceImpl implements WeComService {
             log.info("1---GET--企业微信回调参数：{}", jsonString);
             return verificationUrl(request);
         } else {//post
-            log.info("2---POST--企业微信回调参数：{}", jsonString);
             Map<String, String> resultMap = getRequestParameter(request, String.valueOf(XML.toJSONObject(body).getJSONObject("xml")));
+            log.info("2---POST--企业微信回调参数解析：{}", resultMap);
             //事件类型
             if (resultMap.get("Event").equals("change_external_contact") && resultMap.get("ChangeType").equals("add_external_contact")) {
                 log.info("添加企业客户事件-注册学员信息:{}", resultMap.get("ExternalUserID"));
@@ -219,6 +219,7 @@ public class WeComServiceImpl implements WeComService {
             student.setGender(wxCustomer.getJSONObject("external_contact").getString("gender"));
             student.setAddWay(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("add_way"));
             student.setChannel(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("state"));
+            log.info("学员注册信息：{}", student);
             //注册学员信息-学员与企业微信用户的关系关联
             return studentService.save(student);
         }
