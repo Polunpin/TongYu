@@ -117,6 +117,13 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             // 设置预约时间
             String appointmentTime = formatAppointmentTime(courseRecord, outputFormat);
             courseResponse.setAppointmentTime(appointmentTime);
+
+            if (courseRecord.getTrainerId() == null) {
+                courseResponse.setTrainerName("教练稍后报道 🫡");
+            } else {
+                courseResponse.setTrainerName(trainerService.getById(courseRecord.getTrainerId()).getTrainerName());
+            }
+
             courseRecords.add(courseResponse);
         }
         return courseRecords;
