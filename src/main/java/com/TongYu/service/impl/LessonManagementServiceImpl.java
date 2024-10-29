@@ -71,7 +71,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     public Boolean reservation(CourseAddRequest courseAddRequest) {
         Student student = new Student();
         log.info("当前预约课程信息:{}", courseAddRequest);
-        if (StringUtils.isNotBlank(courseAddRequest.getImageId())) {
+        if (StringUtils.isBlank(courseAddRequest.getImageId())) {
             //体验课
             student.setStuName(courseAddRequest.getStuName());
             student.setOpenId(courseAddRequest.getOpenId());
