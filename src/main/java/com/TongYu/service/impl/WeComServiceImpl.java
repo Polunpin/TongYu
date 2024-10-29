@@ -301,8 +301,8 @@ public class WeComServiceImpl implements WeComService {
 
         //设置与会人员(教练)
         JSONArray attendees = new JSONArray();
-        attendees.add(new JSONObject().fluentPut("userid",
-                trainerService.getById(infoJson.getString("trainerId")).getWorkUserId()));
+//        trainerService.getById(infoJson.getString("trainerId")).getWorkUserId()
+        attendees.add(new JSONObject().fluentPut("userid", "LanYiPing01"));
         schedule.put("attendees", attendees);
 
         schedule.put("summary", infoJson.getString("stuName")); //学员 姓名

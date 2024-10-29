@@ -87,9 +87,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             student.setUsed(student.getUsed() + courseAddRequest.getDuration());
         }
         studentService.updateById(student);
-        // TODO 待完善-发送服务通知：预约成功通知
         // 发送预约通知-教练
-        courseAddRequest.setScheduleId(weComService.createCalendar(JSONObject.toJSONString(courseAddRequest)));
+//        courseAddRequest.setScheduleId(weComService.createCalendar(JSONObject.toJSONString(courseAddRequest)));
         return courseRecordService.save(courseAddRequest);
     }
 
@@ -146,11 +145,11 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         // 管理员角色
         Set<String> workUserIds = new HashSet<>(Arrays.asList("LanYiPing01", "tomorrow", "LanYiPing"));
 
-        // 根据教练id(企微)查询教练信息
-        QueryWrapper<Trainer> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("work_user_id", courseRequest.getWorkUserId());
         //判断是否为管理员角色,如果不是管理员角色，则只能查询自己的课单
         if (!workUserIds.contains(courseRequest.getWorkUserId())) {
+            // 根据教练id(企微)查询教练信息
+            QueryWrapper<Trainer> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("work_user_id", courseRequest.getWorkUserId());
             courseRequest.setTrainerId(String.valueOf(trainerService.getOne(queryWrapper).getId()));
         }
         Page<CourseRecord> courseRecordPage = courseRecordService.listInfo(courseRequest);
@@ -169,7 +168,6 @@ public class LessonManagementServiceImpl implements LessonManagementService {
                 courseResponse.setPendingAmount(lessonPrice + "元" + "/" + diffInHours + "小时");
             }
             if (courseRecord.getStudentId() != null) {
-                log.info("当前查询学生id:{}", courseRecord.getStudentId());
                 Student student = studentService.getById(courseRecord.getStudentId());
                 courseResponse.setExternalUserId(student.getExternalUserId());
                 JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
