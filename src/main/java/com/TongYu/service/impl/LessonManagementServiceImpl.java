@@ -120,7 +120,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             String trainerName = StringUtils.isNotEmpty(trainer.getTrainerName()) ? "待分派" : trainer.getTrainerName();
             courseResponse.setTrainerName(trainerName);
             // 教练头像
-            courseResponse.setTrainerAvatar("image/cock-man.png");
+            courseResponse.setTrainerAvatar("https://cdn3d.iconscout.com/3d/premium/thumb/girl-showing-ok-sign-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--hand-gesture-all-okay-character-pack-people-illustrations-9851625.png?f=webp&h=224");
         }
     }
 

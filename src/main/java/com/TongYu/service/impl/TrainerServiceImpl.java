@@ -35,7 +35,7 @@ public class TrainerServiceImpl extends ServiceImpl<TrainerMapper, Trainer>
             TrainerMobileResponse trainerMobile = new TrainerMobileResponse();
             copyProperties(trainer, trainerMobile);
             // 教练头像
-            trainerMobile.setTrainerAvatar("image/cock-man.png");
+            trainerMobile.setTrainerAvatar("https://cdn3d.iconscout.com/3d/premium/thumb/girl-showing-ok-sign-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--hand-gesture-all-okay-character-pack-people-illustrations-9851625.png?f=webp&h=224");
             trainerMobileList.add(trainerMobile);
         });
         return trainerMobileList;
