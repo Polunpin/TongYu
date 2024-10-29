@@ -42,7 +42,7 @@ public class LessonManagementController {
      * @param courseAddRequest 预约信息（学员个人信息+课程信息）
      * @return ApiResponse
      */
-    @PostMapping("/classReservation")
+    @PostMapping("/reservation")
     public ApiResponse reservation(@RequestBody CourseAddRequest courseAddRequest) {
         return ApiResponse.ok(lessonManagementService.reservation(courseAddRequest));
     }
