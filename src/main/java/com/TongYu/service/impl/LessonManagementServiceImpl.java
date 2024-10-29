@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -70,21 +72,26 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     @Override
     public Boolean reservation(CourseAddRequest courseAddRequest) {
         Student student = new Student();
-        log.info("当前预约课程信息:{}", courseAddRequest);
+        // 使用正则表达式提取课程时长
+        Matcher matcher = Pattern.compile("\\d+").matcher(courseAddRequest.getDuration());
+        int duration = 0;
+        if (matcher.find()) {
+            duration = Integer.parseInt(matcher.group());
+        }
         if (StringUtils.isNotBlank(courseAddRequest.getImageId())) {
             //体验课
+            student.setId(courseAddRequest.getStudentId());
             student.setStuName(courseAddRequest.getStuName());
             student.setOpenId(courseAddRequest.getOpenId());
             student.setTelephone(courseAddRequest.getTelephone());
             student.setImage(courseAddRequest.getImageId());
-            //TODO 待完善-体验课预约时间未同步到学生表 courseAddRequest.getDuration() == 2
-            student.setUsed(2);
+            student.setUsed(duration);
         } else {
             //TODO 待完善-购买课时未同步到学生表
-            student =studentService.getById(courseAddRequest.getStudentId());
+            student = studentService.getById(courseAddRequest.getStudentId());
             //正式课
-            student.setLave(student.getLave() - 2);
-            student.setUsed(student.getUsed() + 2);
+            student.setLave(student.getLave() - duration);
+            student.setUsed(student.getUsed() + duration);
             // 发送预约通知-教练(正式课)
             courseAddRequest.setScheduleId(weComService.createCalendar(courseAddRequest));
         }

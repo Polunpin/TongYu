@@ -39,5 +39,5 @@ public class CourseAddRequest extends CourseRecord {
     /**
      * 预约时长
      */
-    private Integer duration;
+    private String duration;
 }
