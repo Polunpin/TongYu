@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
-import java.time.Instant;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -287,25 +287,30 @@ public class WeComServiceImpl implements WeComService {
         return null;
     }
 
+    @SneakyThrows
     @Override
     public String createCalendar(CourseRecord courseRecord) {
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/schedule/add?access_token=" + GlobalCache.get("access_token");
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/schedule/add?access_token=" + GlobalCache.get("access_token")+"&agentid=1000006";
         //创建 JSON 对象
         JSONObject jsonObject = new JSONObject();
         //设置日程的基本信息
         JSONObject schedule = new JSONObject();
-        //开始时间 Time 为 Unix 时间戳
-        schedule.put("start_time", Instant.parse(courseRecord.getStartTime().toString()).getEpochSecond());
-        //结束时间
-        schedule.put("end_time", Instant.parse(courseRecord.getEndTime().toString()).getEpochSecond());
+        // 定义日期格式
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        // 开始时间 Time 为 Unix 时间戳
+        schedule.put("start_time", courseRecord.getStartTime().getTime() / 1000); // 转换为秒
+        // 结束时间
+        schedule.put("end_time", courseRecord.getEndTime().getTime() / 1000); // 转换为秒
+
+        Student student = studentService.getById(courseRecord.getStudentId());
 
         //设置与会人员(教练)
         JSONArray attendees = new JSONArray();
         attendees.add(new JSONObject().fluentPut("userid",
-                trainerService.getById(courseRecord.getTrainerId()).getWorkUserId()));
+                trainerService.getById(student.getTrainerId()).getWorkUserId()));
         schedule.put("attendees", attendees);
 
-        schedule.put("summary", studentService.getById(courseRecord.getStudentId()).getStuName()); //学员 姓名
+        schedule.put("summary", student.getStuName()); //学员 姓名
         schedule.put("description", "[课时表](https://web.goldenguard.top)"); //描述
         schedule.put("location", courseRecord.getAddress()); //位置
 
