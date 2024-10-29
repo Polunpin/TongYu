@@ -4,6 +4,7 @@ import com.TongYu.aes.AesException;
 import com.TongYu.aes.WXBizJsonMsgCrypt;
 import com.TongYu.config.GlobalCache;
 import com.TongYu.dto.JsSdkResponse;
+import com.TongYu.model.CourseRecord;
 import com.TongYu.model.Student;
 import com.TongYu.service.StudentService;
 import com.TongYu.service.TrainerService;
@@ -287,28 +288,26 @@ public class WeComServiceImpl implements WeComService {
     }
 
     @Override
-    public String createCalendar(String info) {
+    public String createCalendar(CourseRecord courseRecord) {
         String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/schedule/add?access_token=" + GlobalCache.get("access_token");
-        //解析日程信息
-        JSONObject infoJson = JSONObject.parseObject(info);
         //创建 JSON 对象
         JSONObject jsonObject = new JSONObject();
         //设置日程的基本信息
         JSONObject schedule = new JSONObject();
         //开始时间 Time 为 Unix 时间戳
-        schedule.put("start_time", Instant.parse(infoJson.getString("startTime")).getEpochSecond());
+        schedule.put("start_time", Instant.parse(courseRecord.getStartTime().toString()).getEpochSecond());
         //结束时间
-        schedule.put("end_time", Instant.parse(infoJson.getString("endTime")).getEpochSecond());
+        schedule.put("end_time", Instant.parse(courseRecord.getEndTime().toString()).getEpochSecond());
 
         //设置与会人员(教练)
         JSONArray attendees = new JSONArray();
-//        trainerService.getById(infoJson.getString("trainerId")).getWorkUserId()
-        attendees.add(new JSONObject().fluentPut("userid", "LanYiPing01"));
+        attendees.add(new JSONObject().fluentPut("userid",
+                trainerService.getById(courseRecord.getTrainerId()).getWorkUserId()));
         schedule.put("attendees", attendees);
 
-        schedule.put("summary", infoJson.getString("stuName")); //学员 姓名
+        schedule.put("summary", studentService.getById(courseRecord.getStudentId()).getStuName()); //学员 姓名
         schedule.put("description", "[课时表](https://web.goldenguard.top)"); //描述
-        schedule.put("location", infoJson.getString("address")); //位置
+        schedule.put("location", courseRecord.getAddress()); //位置
 
         //设置提醒信息[固定值]
         JSONObject reminders = new JSONObject();

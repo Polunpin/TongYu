@@ -88,8 +88,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             student.setUsed(student.getUsed() + courseAddRequest.getDuration());
         }
         studentService.updateById(student);
-        // 发送预约通知-教练
-//        courseAddRequest.setScheduleId(weComService.createCalendar(JSONObject.toJSONString(courseAddRequest)));
+        // 发送预约通知-教练(正式课)
+        courseAddRequest.setScheduleId(weComService.createCalendar(courseAddRequest));
         return courseRecordService.save(courseAddRequest);
     }
 
@@ -185,6 +185,10 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         //TODO 待完善-预约上课成功通知（上课预约信息、教练信息、学员信息）
         //TODO 待完善-教练-反馈信息（学员上课反馈、教练评价）
         //TODO 待完善-学员-上课信息
+        //分派教练-同步日历信息,并添加日历ID到courseRecord
+        if (courseRecord.getState().equals("待上课")) {
+            courseRecord.setScheduleId(weComService.createCalendar(courseRecord));
+        }
         return courseRecordService.updateById(courseRecord);
     }
 

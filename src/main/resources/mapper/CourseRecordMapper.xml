@@ -27,7 +27,7 @@
         id,start_time,end_time,
         longitude,latitude,address,notes,nature,
         content,performance,proposal,
-        state,student_id,trainer_id,
+        state,student_id,trainer_id,schedule_id,
         creat_time
     </sql>
 </mapper>

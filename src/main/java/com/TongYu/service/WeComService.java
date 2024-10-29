@@ -2,6 +2,7 @@ package com.TongYu.service;
 
 import com.TongYu.aes.AesException;
 import com.TongYu.dto.JsSdkResponse;
+import com.TongYu.model.CourseRecord;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,5 +52,5 @@ public interface WeComService {
 
     String getUserInfo(String code, String state);
 
-    String createCalendar(String info);
+    String createCalendar(CourseRecord info);
 }

@@ -2,6 +2,7 @@ package com.TongYu.controller;
 
 import com.TongYu.aes.AesException;
 import com.TongYu.config.ApiResponse;
+import com.TongYu.model.CourseRecord;
 import com.TongYu.service.WeComService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -117,7 +118,7 @@ public class WeComController {
      * @param info 学员姓名、预约时间、预约地点；提前一小时自动提醒
      */
     @PostMapping(value = "/createCalendar")
-    public ApiResponse createCalendar(@RequestBody String info) {
+    public ApiResponse createCalendar(@RequestBody CourseRecord info) {
         return ApiResponse.ok(weComService.createCalendar(info));
     }
 

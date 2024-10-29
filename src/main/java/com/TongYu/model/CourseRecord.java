@@ -91,7 +91,7 @@ public class CourseRecord implements Serializable {
     private Long trainerId;
 
     /**
-     * 教练ID
+     * 日历ID
      */
     private String scheduleId;
 
