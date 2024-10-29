@@ -71,7 +71,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     public Boolean reservation(CourseAddRequest courseAddRequest) {
         Student student = new Student();
         log.info("当前预约课程信息:{}", courseAddRequest);
-        if (StringUtils.isBlank(courseAddRequest.getImageId())) {
+        if (StringUtils.isNotBlank(courseAddRequest.getImageId())) {
             //体验课
             student.setStuName(courseAddRequest.getStuName());
             student.setOpenId(courseAddRequest.getOpenId());
@@ -84,10 +84,10 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             //正式课
             student.setLave(student.getLave() - courseAddRequest.getDuration());
             student.setUsed(student.getUsed() + courseAddRequest.getDuration());
+            // 发送预约通知-教练(正式课)
+            courseAddRequest.setScheduleId(weComService.createCalendar(courseAddRequest));
         }
         studentService.updateById(student);
-        // 发送预约通知-教练(正式课)
-        courseAddRequest.setScheduleId(weComService.createCalendar(courseAddRequest));
         return courseRecordService.save(courseAddRequest);
     }
 
