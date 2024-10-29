@@ -34,8 +34,8 @@ public class TrainerServiceImpl extends ServiceImpl<TrainerMapper, Trainer>
         list.forEach(trainer -> {
             TrainerMobileResponse trainerMobile = new TrainerMobileResponse();
             copyProperties(trainer, trainerMobile);
-            // 教练头像 TODO 待完善
-            trainerMobile.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
+            // 教练头像
+            trainerMobile.setTrainerAvatar("image/cock-man.png");
             trainerMobileList.add(trainerMobile);
         });
         return trainerMobileList;

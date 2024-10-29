@@ -49,11 +49,10 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             log.info("当前查询学生Info:{}", student);
             copyProperties(student, personalInfo);
             personalInfo.setStuName(student.getStuName() == null ? "待约课" : student.getStuName());
-            JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
-            personalInfo.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
+            // 学员头像 取消
+//            JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
+//            personalInfo.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
             personalInfo.setIsAppointment(student.getUsed() > 0);
-            //TODO 待完善-熟练度由教练完成
-            personalInfo.setLevelNumber(0);
         } else {
             // 学员不存在时返回默认值
             personalInfo.setId(0L);
@@ -63,7 +62,6 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             personalInfo.setGive(0);
             personalInfo.setLave(0);
             personalInfo.setUsed(0);
-            personalInfo.setLevelNumber(0);
             personalInfo.setIsAppointment(Boolean.FALSE);
         }
         return personalInfo;
@@ -119,10 +117,10 @@ public class LessonManagementServiceImpl implements LessonManagementService {
     private void setTrainerInfo(CourseRecord courseRecord, CourseResponse courseResponse) {
         if (courseRecord.getTrainerId() != null) {
             Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
-            String trainerName = StringUtils.isNotEmpty(trainer.getTrainerName()) ? "待分派教练" : trainer.getTrainerName();
+            String trainerName = StringUtils.isNotEmpty(trainer.getTrainerName()) ? "待分派" : trainer.getTrainerName();
             courseResponse.setTrainerName(trainerName);
-            // 教练头像 TODO 待完善
-            courseResponse.setTrainerAvatar("http://wx.qlogo.cn/mmhead/Q3auHgzwzM4Dib3uiaibRsBe2LOiavArtYIIyQoZ0b8cDpNdM53b9f3VIw/0");
+            // 教练头像
+            courseResponse.setTrainerAvatar("image/cock-man.png");
         }
     }
 
@@ -182,9 +180,6 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     @Override
     public Object updateCourseRecord(CourseRecord courseRecord) {
-        //TODO 待完善-预约上课成功通知（上课预约信息、教练信息、学员信息）
-        //TODO 待完善-教练-反馈信息（学员上课反馈、教练评价）
-        //TODO 待完善-学员-上课信息
         //分派教练-同步日历信息,并添加日历ID到courseRecord
         if (courseRecord.getState().equals("待上课")) {
             courseRecord.setScheduleId(weComService.createCalendar(courseRecord));
@@ -257,7 +252,6 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
         return courseAddRequest;
     }
-    //TODO 待完善-回调 支付成功通知-购买课程通知
 }
 
 
