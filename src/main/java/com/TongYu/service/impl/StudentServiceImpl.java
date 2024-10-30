@@ -26,14 +26,10 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student>
 
     @Override
     public void getStudentInformation(String externalUserId) {
-        log.info("externalUserId:{}", externalUserId);
         Student student = this.getOne(new QueryWrapper<Student>().eq("external_user_id", externalUserId));
-        //第一次请求保存用户数据
         if (student == null) {
             weComService.registerStudent(externalUserId);
-            student = this.getOne(new QueryWrapper<Student>().eq("external_user_id", externalUserId));
         }
-        log.info("student:{}", student);
     }
 }
 

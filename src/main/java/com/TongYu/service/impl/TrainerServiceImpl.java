@@ -35,7 +35,7 @@ public class TrainerServiceImpl extends ServiceImpl<TrainerMapper, Trainer>
             TrainerMobileResponse trainerMobile = new TrainerMobileResponse();
             copyProperties(trainer, trainerMobile);
             // 教练头像
-            trainerMobile.setTrainerAvatar("https://cdn3d.iconscout.com/3d/premium/thumb/woman-pointing-hand-to-introduce-somthing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--girl-presenting-copy-space-at-something-point-left-a-character-pack-people-illustrations-9851613.png?f=webp");
+            trainerMobile.setTrainerAvatar("https://7072-prod-1gnzk6n75a8b6b8b-1327385705.tcb.qcloud.la/images/trainerImage.png?sign=dab6fafb43360b3154e9101fce9e1d83&t=1730302602");
             trainerMobileList.add(trainerMobile);
         });
         return trainerMobileList;

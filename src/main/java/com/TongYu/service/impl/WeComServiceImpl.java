@@ -215,14 +215,16 @@ public class WeComServiceImpl implements WeComService {
             Student student = new Student();
             student.setExternalUserId(externalUserId);
             JSONObject wxCustomer = getWxCustomerDetails(externalUserId);
-            student.setUnionId(wxCustomer.getJSONObject("external_contact").getString("unionid"));
-            student.setGender(wxCustomer.getJSONObject("external_contact").getString("gender"));
-            student.setExternalUserName(wxCustomer.getJSONObject("external_contact").getString("name"));
-            student.setAddWay(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("add_way"));
-            student.setChannel(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("state"));
-            log.info("学员注册信息：{}", student);
-            //注册学员信息-学员与企业微信用户的关系关联
-            return studentService.save(student);
+            if (wxCustomer.getJSONObject("external_contact").getString("type").equals("1")) {
+                student.setUnionId(wxCustomer.getJSONObject("external_contact").getString("unionid"));
+                student.setGender(wxCustomer.getJSONObject("external_contact").getString("gender"));
+                student.setExternalUserName(wxCustomer.getJSONObject("external_contact").getString("name"));
+                student.setAddWay(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("add_way"));
+                student.setChannel(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("state"));
+                log.info("学员注册信息：{}", student);
+                //注册学员信息-学员与企业微信用户的关系关联
+                return studentService.save(student);
+            }
         }
         return false;
     }
@@ -250,6 +252,10 @@ public class WeComServiceImpl implements WeComService {
         //签名，见 附录-JS-SDK使用权限签名算法
         String signature = "jsapi_ticket=" + ticket + "&noncestr=" + nonceStr + "&timestamp=" + timestamp + "&url=" + URLDecoder.decode(pageUrl, "UTF-8");
         byte[] digest = MessageDigest.getInstance("SHA-1").digest(signature.getBytes());
+        return getJsSdkResponse(digest, timestamp, nonceStr);
+    }
+
+    private JsSdkResponse getJsSdkResponse(byte[] digest, long timestamp, String nonceStr) {
         StringBuilder stringBuilder = new StringBuilder();
         for (byte b : digest) {
             String hex = Integer.toHexString(0xff & b);
@@ -290,7 +296,7 @@ public class WeComServiceImpl implements WeComService {
     @SneakyThrows
     @Override
     public String createCalendar(CourseRecord courseRecord) {
-        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/schedule/add?access_token=" + GlobalCache.get("access_token")+"&agentid=1000006";
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/oa/schedule/add?access_token=" + GlobalCache.get("access_token") + "&agentid=1000006";
         //创建 JSON 对象
         JSONObject jsonObject = new JSONObject();
         //设置日程的基本信息

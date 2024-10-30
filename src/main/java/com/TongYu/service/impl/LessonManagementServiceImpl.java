@@ -51,14 +51,11 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             log.info("当前查询学生Info:{}", student);
             copyProperties(student, personalInfo);
             personalInfo.setStuName(student.getStuName() == null ? "待约课" : student.getStuName());
-            // 学员头像 取消
-//            JSONObject wxCustomerDetails = weComService.getWxCustomerDetails(student.getExternalUserId());
-//            personalInfo.setHeadImgUrl(wxCustomerDetails.getJSONObject("external_contact").getString("avatar"));
             personalInfo.setIsAppointment(student.getUsed() > 0);
         } else {
             // 学员不存在时返回默认值
             personalInfo.setId(0L);
-            personalInfo.setStuName("请联系客服");
+            personalInfo.setStuName("联系客服");
             personalInfo.setHeadImgUrl("");
             personalInfo.setGive(0);
             personalInfo.setLave(0);
@@ -134,7 +131,7 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             String trainerName = StringUtils.isNotEmpty(trainer.getTrainerName()) ? "待分派" : trainer.getTrainerName();
             courseResponse.setTrainerName(trainerName);
             // 教练头像
-            courseResponse.setTrainerAvatar("https://cdn3d.iconscout.com/3d/premium/thumb/woman-pointing-hand-to-introduce-somthing-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--girl-presenting-copy-space-at-something-point-left-a-character-pack-people-illustrations-9851613.png?f=webp");
+            courseResponse.setTrainerAvatar("https://7072-prod-1gnzk6n75a8b6b8b-1327385705.tcb.qcloud.la/images/trainerImage.png?sign=dab6fafb43360b3154e9101fce9e1d83&t=1730302602");
         }
     }
 
