@@ -113,13 +113,6 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             // 设置预约时间
             String appointmentTime = formatAppointmentTime(courseRecord, outputFormat);
             courseResponse.setAppointmentTime(appointmentTime);
-
-            if (courseRecord.getTrainerId() == null) {
-                courseResponse.setTrainerName("教练稍后报道 🫡");
-            } else {
-                courseResponse.setTrainerName(trainerService.getById(courseRecord.getTrainerId()).getTrainerName());
-            }
-
             courseRecords.add(courseResponse);
         }
         return courseRecords;
@@ -127,12 +120,11 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     private void setTrainerInfo(CourseRecord courseRecord, CourseResponse courseResponse) {
         if (courseRecord.getTrainerId() != null) {
-            Trainer trainer = trainerService.getById(courseRecord.getTrainerId());
-            String trainerName = StringUtils.isNotEmpty(trainer.getTrainerName()) ? "待分派" : trainer.getTrainerName();
-            courseResponse.setTrainerName(trainerName);
-            // 教练头像
-            courseResponse.setTrainerAvatar("https://7072-prod-1gnzk6n75a8b6b8b-1327385705.tcb.qcloud.la/images/trainerImage.png?sign=dab6fafb43360b3154e9101fce9e1d83&t=1730302602");
+            courseResponse.setTrainerName(trainerService.getById(courseRecord.getTrainerId()).getTrainerName());
+        } else {
+            courseResponse.setTrainerName("分派中");
         }
+        courseResponse.setTrainerAvatar("https://7072-prod-1gnzk6n75a8b6b8b-1327385705.tcb.qcloud.la/images/trainerImage.png?sign=dab6fafb43360b3154e9101fce9e1d83&t=1730302602");
     }
 
     private LocalDateTime convertToLocalDateTime(Date date) {
