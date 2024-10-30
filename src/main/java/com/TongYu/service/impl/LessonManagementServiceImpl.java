@@ -251,7 +251,9 @@ public class LessonManagementServiceImpl implements LessonManagementService {
         Student student = studentService.getById(studentId);
         courseAddRequest.setStuName(student.getStuName());
         courseAddRequest.setTelephone(student.getTelephone());
-        courseAddRequest.setTrainerName(trainerService.getById(student.getTrainerId()).getTrainerName());
+        if (courseRecord.getTrainerId() != null) {
+            courseAddRequest.setTrainerName(trainerService.getById(student.getTrainerId()).getTrainerName());
+        }
 
         return courseAddRequest;
     }
