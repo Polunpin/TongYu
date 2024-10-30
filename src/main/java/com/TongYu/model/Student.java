@@ -74,7 +74,7 @@ public class Student implements Serializable {
     /**
      * 总课时
      */
-    private Integer total;
+    private String externalUserName;
 
     /**
      * 赠送课时

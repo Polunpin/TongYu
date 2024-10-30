@@ -60,7 +60,6 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             personalInfo.setId(0L);
             personalInfo.setStuName("请联系客服");
             personalInfo.setHeadImgUrl("");
-            personalInfo.setTotal(0);
             personalInfo.setGive(0);
             personalInfo.setLave(0);
             personalInfo.setUsed(0);
