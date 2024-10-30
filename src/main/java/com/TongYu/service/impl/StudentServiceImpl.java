@@ -1,14 +1,12 @@
 package com.TongYu.service.impl;
 
-import com.TongYu.mapper.CourseRecordMapper;
+import com.TongYu.mapper.StudentMapper;
+import com.TongYu.model.Student;
+import com.TongYu.service.StudentService;
 import com.TongYu.service.WeComService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.TongYu.model.Student;
-import com.TongYu.service.StudentService;
-import com.TongYu.mapper.StudentMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
