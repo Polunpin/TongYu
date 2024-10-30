@@ -7,10 +7,7 @@ import com.TongYu.service.StudentService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -49,4 +46,15 @@ public class StudentController {
     public ApiResponse updateBatchById(@RequestBody List<Student> Students) {
         return ApiResponse.ok(studentService.updateBatchById(Students));
     }
+
+    /**
+     * 查询学员个人信息|externalUserId
+     *
+     * @return API response html
+     */
+    @GetMapping("/getStudentInformation")
+    public void getStudentInformation(String externalUserId) {
+        studentService.getStudentInformation(externalUserId);
+    }
+
 }

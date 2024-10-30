@@ -10,4 +10,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface StudentService extends IService<Student> {
 
+    void getStudentInformation(String externalUserId);
 }
