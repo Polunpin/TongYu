@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -218,6 +217,7 @@ public class WeComServiceImpl implements WeComService {
             JSONObject wxCustomer = getWxCustomerDetails(externalUserId);
             student.setUnionId(wxCustomer.getJSONObject("external_contact").getString("unionid"));
             student.setGender(wxCustomer.getJSONObject("external_contact").getString("gender"));
+            student.setExternalUserName(wxCustomer.getJSONObject("external_contact").getString("name"));
             student.setAddWay(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("add_way"));
             student.setChannel(wxCustomer.getJSONArray("follow_user").getJSONObject(0).getString("state"));
             log.info("学员注册信息：{}", student);
@@ -295,8 +295,6 @@ public class WeComServiceImpl implements WeComService {
         JSONObject jsonObject = new JSONObject();
         //设置日程的基本信息
         JSONObject schedule = new JSONObject();
-        // 定义日期格式
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         // 开始时间 Time 为 Unix 时间戳
         schedule.put("start_time", courseRecord.getStartTime().getTime() / 1000); // 转换为秒
         // 结束时间

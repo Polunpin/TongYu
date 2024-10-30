@@ -27,11 +27,6 @@ public class PersonalInfoResponse {
     private String headImgUrl;
 
     /**
-     * 总课时
-     */
-    private Integer total;
-
-    /**
      * 赠送课时
      */
     private Integer give;

@@ -47,6 +47,11 @@ public class Student implements Serializable {
     private String stuName;
 
     /**
+     * 外部联系人的名称
+     */
+    private String externalUserName;
+
+    /**
      * 性别
      */
     private String gender;
@@ -70,11 +75,6 @@ public class Student implements Serializable {
      * 渠道
      */
     private String channel;
-
-    /**
-     * 总课时
-     */
-    private String externalUserName;
 
     /**
      * 赠送课时
