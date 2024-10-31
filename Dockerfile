@@ -1,13 +1,13 @@
 # 二开推荐阅读[如何提高项目构建效率](https://developers.weixin.qq.com/miniprogram/dev/wxcloudrun/src/scene/build/speed.html)
 # 选择构建用基础镜像。如需更换，请到[dockerhub官方仓库](https://hub.docker.com/_/java?tab=tags)自行选择后替换。
 FROM maven:3.6.0-jdk-8-slim as build
-# 解决时区问题
-RUN apt-get update && apt-get install -y tzdata && \
-    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    echo "Asia/Shanghai" > /etc/timezone
 
 # 指定构建过程中的工作目录
 WORKDIR /app
+
+FROM centos:latest
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone
 
 # 将src目录下所有文件，拷贝到工作目录中src目录下（.gitignore/.dockerignore中文件除外）
 COPY src /app/src
