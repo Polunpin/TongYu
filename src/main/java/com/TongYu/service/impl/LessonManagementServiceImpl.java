@@ -192,8 +192,8 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             courseRecordDb.setTrainerId(courseRecord.getTrainerId());
             courseRecordDb.setState("待上课");
             Student student = new Student();
-            student.setId(courseRecord.getStudentId());
-            student.setTrainerId(courseRecord.getTrainerId());
+            student.setId(courseRecordDb.getStudentId());
+            student.setTrainerId(courseRecordDb.getTrainerId());
             studentService.updateById(student);
             courseRecord.setScheduleId(weComService.createCalendar(courseRecordDb));
         }
