@@ -83,6 +83,9 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             student.setImage(courseAddRequest.getImageId());
             student.setUsed(duration);
             courseAddRequest.setNature("体验课");
+            //课时更新
+            student.setLave(0);
+            student.setUsed(2);
         } else {
             //TODO 待完善-购买课时未同步到学生表
             student = studentService.getById(courseAddRequest.getStudentId());
@@ -90,10 +93,10 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             courseAddRequest.setNature("正式课");
             // 发送预约通知-教练(正式课)
             courseAddRequest.setScheduleId(weComService.createCalendar(courseAddRequest));
+            //课时更新
+            student.setLave(student.getLave() - duration);
+            student.setUsed(student.getUsed() + duration);
         }
-        //课时更新
-        student.setLave(student.getLave() - duration);
-        student.setUsed(student.getUsed() + duration);
         studentService.updateById(student);
         return courseRecordService.save(courseAddRequest);
     }
