@@ -10,6 +10,8 @@ import com.TongYu.service.StudentService;
 import com.TongYu.service.TrainerService;
 import com.TongYu.service.WeComService;
 import com.TongYu.util.ConstantUtil;
+import com.TongYu.util.FileHandle;
+import com.TongYu.util.ImageCompressor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -29,6 +31,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
@@ -66,33 +69,39 @@ public class WeComServiceImpl implements WeComService {
     @Override
     @SneakyThrows
     public String uploadFileToWeCom(MultipartFile file, String stuId) {
-        //获取文件名的后缀
+        // 获取文件的扩展名
         String originalFilename = file.getOriginalFilename();
-        String extension = "";
-        if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-        }
-        //获取学员信息,用于文件名标注学员姓名
+        String extension = (originalFilename != null && originalFilename.lastIndexOf(".") != -1)
+                ? originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase()
+                : "";
+
+        // 压缩文件并转换为字节数组
+        File compressedFile = ImageCompressor.compressImage(file,extension, 0.5, 0.8);
+        byte[] byteArray = FileHandle.fileToByteArray(compressedFile);
+        FileHandle.deleteFile(compressedFile);
+
+        // 获取学员信息，用于文件命名
         Student student = studentService.getById(stuId);
-        //上传文件到企业微信
+        String fileName = student.getStuName() + "." +extension;
+
+        // 配置请求的 URL 和参数
         String url = "https://qyapi.weixin.qq.com/cgi-bin/wedrive/file_upload?access_token=" + GlobalCache.get("access_token");
         JSONObject jsonObject = new JSONObject();
-        //文件内容
-        jsonObject.put("file_base64_content", Base64.getEncoder().encodeToString(file.getBytes()));
-        //学员姓名+文件名后缀
-        jsonObject.put("file_name", student.getStuName() + "." + extension);
-        //空间ID（固定值）
+        jsonObject.put("file_base64_content", Base64.getEncoder().encodeToString(byteArray));
+        jsonObject.put("file_name", fileName);
         jsonObject.put("spaceid", spaceId);
         jsonObject.put("fatherid", fatherId);
-        //POST请求
+
+        // 发送 POST 请求
         ResponseEntity<String> response = new RestTemplate().postForEntity(url, jsonObject, String.class);
         JSONObject object = JSONObject.parseObject(response.getBody());
+
         if (object.getIntValue("errcode") == 0) {
             return object.getString("fileid");
         } else {
             log.info("上传文件到企业微信失败！返回结果：{}", response.getBody());
+            return response.getBody();
         }
-        return response.getBody();
     }
 
     @Override
@@ -310,8 +319,7 @@ public class WeComServiceImpl implements WeComService {
 
         //设置与会人员(教练)
         JSONArray attendees = new JSONArray();
-        attendees.add(new JSONObject().fluentPut("userid",
-                trainerService.getById(courseRecord.getTrainerId()).getWorkUserId()));
+        attendees.add(new JSONObject().fluentPut("userid", trainerService.getById(courseRecord.getTrainerId()).getWorkUserId()));
         schedule.put("attendees", attendees);
 
         schedule.put("summary", courseRecord.getNature() + " " + student.getStuName()); //学员 姓名
