@@ -5,6 +5,11 @@ FROM maven:3.6.0-jdk-8-slim as build
 # 指定构建过程中的工作目录
 WORKDIR /app
 
+#解决时区问题
+FROM centos as centos
+COPY --from=centos  /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo "Asia/Shanghai" > /etc/timezone
+
 # 将src目录下所有文件，拷贝到工作目录中src目录下（.gitignore/.dockerignore中文件除外）
 COPY src /app/src
 
@@ -44,7 +49,3 @@ EXPOSE 80
 # 写多行独立的CMD命令是错误写法！只有最后一行CMD命令会被执行，之前的都会被忽略，导致业务报错。
 # 请参考[Docker官方文档之CMD命令](https://docs.docker.com/engine/reference/builder/#cmd)
 CMD ["java", "-jar", "/app/TongYu-1.0.jar"]
-
-FROM centos as centos
-COPY --from=centos  /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-RUN echo "Asia/Shanghai" > /etc/timezone
