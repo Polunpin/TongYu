@@ -183,9 +183,19 @@ public class LessonManagementServiceImpl implements LessonManagementService {
 
     @Override
     public Object updateCourseRecord(CourseRecord courseRecord) {
-        //分派教练-同步日历信息,并添加日历ID到courseRecord
+        //分派教练-
+        // 1. 更新courseRecord表
+        // 2. 更新student表
+        // 3. 同步日历信息,并添加日历ID到courseRecord
         if (courseRecord.getState().equals("待上课")) {
-            courseRecord.setScheduleId(weComService.createCalendar(courseRecord));
+            CourseRecord courseRecordDb = courseRecordService.getById(courseRecord.getId());
+            courseRecordDb.setTrainerId(courseRecord.getTrainerId());
+            courseRecordDb.setState("待上课");
+            Student student = new Student();
+            student.setId(courseRecord.getStudentId());
+            student.setTrainerId(courseRecord.getTrainerId());
+            studentService.updateById(student);
+            courseRecord.setScheduleId(weComService.createCalendar(courseRecordDb));
         }
         return courseRecordService.updateById(courseRecord);
     }
