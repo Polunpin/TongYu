@@ -87,12 +87,13 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             //TODO 待完善-购买课时未同步到学生表
             student = studentService.getById(courseAddRequest.getStudentId());
             //正式课
-            student.setLave(student.getLave() - duration);
-            student.setUsed(student.getUsed() + duration);
             courseAddRequest.setNature("正式课");
             // 发送预约通知-教练(正式课)
             courseAddRequest.setScheduleId(weComService.createCalendar(courseAddRequest));
         }
+        //课时更新
+        student.setLave(student.getLave() - duration);
+        student.setUsed(student.getUsed() + duration);
         studentService.updateById(student);
         return courseRecordService.save(courseAddRequest);
     }
