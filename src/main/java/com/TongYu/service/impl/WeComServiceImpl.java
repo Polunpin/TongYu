@@ -80,10 +80,7 @@ public class WeComServiceImpl implements WeComService {
         byte[] byteArray = FileHandle.fileToByteArray(compressedFile);
         FileHandle.deleteFile(compressedFile);
 
-        // 获取学员信息，用于文件命名
-        Student student = studentService.getById(stuId);
-        String fileName = student.getStuName() + "." +extension;
-
+        String fileName = stuId + "." +extension;
         // 配置请求的 URL 和参数
         String url = "https://qyapi.weixin.qq.com/cgi-bin/wedrive/file_upload?access_token=" + GlobalCache.get("access_token");
         JSONObject jsonObject = new JSONObject();
