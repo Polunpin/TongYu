@@ -82,12 +82,14 @@ public class LessonManagementServiceImpl implements LessonManagementService {
             student.setTelephone(courseAddRequest.getTelephone());
             student.setImage(courseAddRequest.getImageId());
             student.setUsed(duration);
+            courseAddRequest.setNature("体验课");
         } else {
             //TODO 待完善-购买课时未同步到学生表
             student = studentService.getById(courseAddRequest.getStudentId());
             //正式课
             student.setLave(student.getLave() - duration);
             student.setUsed(student.getUsed() + duration);
+            courseAddRequest.setNature("正式课");
             // 发送预约通知-教练(正式课)
             courseAddRequest.setScheduleId(weComService.createCalendar(courseAddRequest));
         }

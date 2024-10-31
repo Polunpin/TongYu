@@ -314,7 +314,7 @@ public class WeComServiceImpl implements WeComService {
                 trainerService.getById(courseRecord.getTrainerId()).getWorkUserId()));
         schedule.put("attendees", attendees);
 
-        schedule.put("summary", student.getStuName()); //学员 姓名
+        schedule.put("summary", courseRecord.getNature() + " " + student.getStuName()); //学员 姓名
         schedule.put("description", "[课时表](https://web.goldenguard.top)"); //描述
         schedule.put("location", courseRecord.getAddress()); //位置
 
