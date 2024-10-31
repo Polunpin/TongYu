@@ -42,9 +42,9 @@ public class PersonalInfoResponse {
     private Integer used;
 
     /**
-     * 驾驶熟练度
+     * 教练ID
      */
-    private Integer levelNumber;
+    private Long trainerId;
 
     /**
      * 约课 true-已约   false-未约
